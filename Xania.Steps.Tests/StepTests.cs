@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -194,6 +193,22 @@ namespace Xania.Steps.Tests
 
             var result = selectStep.Execute(_organisation);
             result.ShouldBeEquivalentTo(new[] { 60, 50, 55 });
+        }
+
+        [Test]
+        public void BranchSelectorTest()
+        {
+            var branchStep = Step.Root<Organisation>()
+                .Branch(r => r.Select(o => o.Persons).Assign(p => p.Age, 123))
+                .Branch(r => r.Invoke(o => o.Init()))
+                .Merge();
+
+            // act
+            branchStep.Execute(_organisation);
+
+            // assert
+            _organisation.Persons.Select(p => p.Age).Should().BeEquivalentTo(new[] { 123, 123, 123 });
+            _organisation.TotalAge.Should().Be(123 * 3);
         }
     }
 }

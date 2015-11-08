@@ -14,32 +14,32 @@ namespace Xania.Steps
         //    return new ComposeStep<TModel, TSubResult, TResult>(step1, step2);
         //}
 
-        public static IStep<TModel> ForEach<TModel, TResult>(this IStep<TModel, IEnumerable<TResult>> step1, IStep<TResult> step2)
+        public static IStep<TRoot> ForEach<TRoot, TResult>(this IStep<TRoot, IEnumerable<TResult>> step1, IStep<TResult> step2)
         {
             return Step.ComposeStep(step1, Step.ForEach(step2));
         }
 
-        public static IStep<TModel, IEnumerable<TResult>> ForEach<TModel, TSubResult, TResult>(this IStep<TModel, IEnumerable<TSubResult>> step1, IStep<TSubResult, TResult> step2)
+        public static IStep<TRoot, IEnumerable<TResult>> ForEach<TRoot, TSubResult, TResult>(this IStep<TRoot, IEnumerable<TSubResult>> step1, IStep<TSubResult, TResult> step2)
         {
             return Step.ComposeStep(step1, Step.ForEach(step2));
         }
 
-        public static IStep<TModel, IEnumerable<TResult>> Select<TModel, TSubResult, TResult>(this IStep<TModel, IEnumerable<TSubResult>> step1, Func<TSubResult, TResult> step2)
+        public static IStep<TRoot, IEnumerable<TResult>> Select<TRoot, TSubResult, TResult>(this IStep<TRoot, IEnumerable<TSubResult>> step1, Func<TSubResult, TResult> step2)
         {
             return Step.ComposeStep(step1, Step.ForEach(step2));
         }
 
-        public static IStep<TModel, TResult> Select<TModel, TSubResult, TResult>(this IStep<TModel, TSubResult> step1, Func<TSubResult, TResult> step2)
+        public static IStep<TRoot, TResult> Select<TRoot, TSubResult, TResult>(this IStep<TRoot, TSubResult> step1, Func<TSubResult, TResult> step2)
         {
             return Step.ComposeStep(step1, Step.Select(step2));
         }
 
-        public static IStep<TModel, IEnumerable<TSubResult>> Assign<TModel, TSubResult, TResult>(this IStep<TModel, IEnumerable<TSubResult>> step1, Expression<Func<TSubResult, TResult>> assignProperty, TResult value)
+        public static IStep<TRoot, IEnumerable<TModel>> Assign<TRoot, TModel, TResult>(this IStep<TRoot, IEnumerable<TModel>> step1, Expression<Func<TModel, TResult>> assignProperty, TResult value)
         {
-            return step1.ForEach(new AssignStep<TSubResult, TResult>(assignProperty, value));
+            return step1.ForEach(new AssignStep<TModel, TResult>(assignProperty, value));
         }
 
-        public static IStep<TModel, TResult> Invoke<TModel, TResult>(this IStep<TModel, TResult> step1, Action<TResult> action)
+        public static IStep<TRoot, TResult> Invoke<TRoot, TResult>(this IStep<TRoot, TResult> step1, Action<TResult> action)
         {
             return Step.ComposeStep(step1, new SelectStep<TResult, TResult>(m =>
             {
@@ -47,30 +47,37 @@ namespace Xania.Steps
             }));
         }
 
-        public static BranchStep<TModel, TSubResult, TResult> Branch<TModel, TSubResult, TResult>(this IStep<TModel, TSubResult> step1, IStep<TSubResult, TResult> step2)
+        public static BranchStep<TRoot, TSubResult, TResult> Branch<TRoot, TSubResult, TResult>(this IStep<TRoot, TSubResult> step1, IStep<TSubResult, TResult> step2)
         {
-            return new BranchStep<TModel, TSubResult, TResult>(step1, step2);
+            return new BranchStep<TRoot, TSubResult, TResult>(step1, step2);
+        }
+
+        public static BranchStep<TRoot, TModel, TResult> Branch<TRoot, TModel, TResult>(this IStep<TRoot, TModel> step1,
+            Func<IStep<TRoot, TModel>, IStep<TModel, TResult>> branchBuilder)
+        {
+            var step2 = branchBuilder(step1);
+            return step1.Branch(step2);
         }
     }
 
-    public class BranchStep<TModel, TSubResult, TResult> : IStep<TSubResult, TSubResult>
+    public class BranchStep<TRoot, TModel, TResult> : IStep<TModel, TModel>
     {
-        private readonly IStep<TModel, TSubResult> _step1;
-        private readonly IStep<TSubResult, TResult> _step2;
+        private readonly IStep<TRoot, TModel> _step1;
+        private readonly IStep<TModel, TResult> _step2;
 
-        public BranchStep(IStep<TModel, TSubResult> step1, IStep<TSubResult, TResult> step2)
+        public BranchStep(IStep<TRoot, TModel> step1, IStep<TModel, TResult> step2)
         {
             _step1 = step1;
             _step2 = step2;
         }
 
-        public TSubResult Execute(TSubResult model)
+        public TModel Execute(TModel model)
         {
             _step2.Execute(model);
             return model;
         }
 
-        public IStep<TModel, TResult> Merge()
+        public IStep<TRoot, TResult> Merge()
         {
             return Step.ComposeStep(_step1, _step2);
         }

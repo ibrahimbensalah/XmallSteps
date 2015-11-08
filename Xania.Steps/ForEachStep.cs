@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Xania.Steps
 {
@@ -13,8 +14,7 @@ namespace Xania.Steps
 
         public IEnumerable<TResult> Execute(IEnumerable<TModel> models)
         {
-            foreach (var item in models)
-                yield return _step.Execute(item);
+            return models.Select(item => _step.Execute(item)).ToArray();
         }
     }
 
