@@ -176,8 +176,7 @@ namespace Xania.Steps.Tests
         public void BranchMergeTest()
         {
             var selectStep = Step.Root<Organisation>()
-                .Branch(Step.Root<Organisation>().Invoke(o => o.Init()).Select(o => o.Persons).Select(p => p.Age))
-                .Merge();
+                .Compose(Step.Root<Organisation>().Invoke(o => o.Init()).Select(o => o.Persons).Select(p => p.Age));
 
             selectStep.Execute(_organisation).ShouldBeEquivalentTo(new[] { 60, 50, 55 });
         }
@@ -199,9 +198,8 @@ namespace Xania.Steps.Tests
         public void BranchSelectorTest()
         {
             var branchStep = Step.Root<Organisation>()
-                .Branch(r => r.Select(o => o.Persons).Assign(p => p.Age, 123))
-                .Branch(r => r.Invoke(o => o.Init()))
-                .Merge();
+                .Branch(o => o.Persons, r => r.Assign(p => p.Age, 123))
+                .Branch(r => r.Invoke(o => o.Init()));
 
             // act
             branchStep.Execute(_organisation);
@@ -209,6 +207,22 @@ namespace Xania.Steps.Tests
             // assert
             _organisation.Persons.Select(p => p.Age).Should().BeEquivalentTo(new[] { 123, 123, 123 });
             _organisation.TotalAge.Should().Be(123 * 3);
+        }
+
+        [Test]
+        public void WhenStepTest()
+        {
+            var branchStep = Step.Root<Person>()
+                .When(p => p.Age > 18, r => r.Assign(p => p.Age, 18))
+                .When(p => p.Age < 14, r => r.Assign(p => p.Age, 14));
+
+            var person = new Person {Age = 11};
+
+            // act
+            branchStep.Execute(person);
+
+            // assert
+            person.Age.Should().Be(14);
         }
     }
 }

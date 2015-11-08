@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="AggregateStep.cs" />
     <Compile Include="AssignStep.cs" />
+    <Compile Include="BranchStep.cs" />
     <Compile Include="ComposeStep.cs" />
     <Compile Include="ConstantStep.cs" />
     <Compile Include="ForEachStep.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="SequenceStep.cs" />
     <Compile Include="Step.cs" />
     <Compile Include="StepExtensions.cs" />
+    <Compile Include="WhenStep.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

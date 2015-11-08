@@ -53,25 +53,29 @@ namespace Xania.Steps
             return sequence;
         }
 
-        public static ComposeStep<TModel, TSubResult, TResult> ComposeStep<TModel, TSubResult, TResult>(
+        public static ComposeStep<TModel, TSubResult, TResult> Compose<TModel, TSubResult, TResult>(
             IStep<TModel, TSubResult> step1, IStep<TSubResult, TResult> step2)
         {
             return new ComposeStep<TModel, TSubResult, TResult>(step1, step2);
         }
 
-        public static ComposeStep<TModel, TResult> ComposeStep<TModel, TResult>(
+        public static ComposeStep<TModel, TResult> Compose<TModel, TResult>(
             IStep<TModel, TResult> step1, IStep<TResult> step2)
         {
             return new ComposeStep<TModel, TResult>(step1, step2);
         }
 
-        public static IStep<TModel, TModel> Root<TModel>()
+        public static IRoot<TModel> Root<TModel>()
         {
             return new RootStep<TModel>();
         }
     }
 
-    public class RootStep<TModel> : IStep<TModel, TModel>
+    public interface IRoot<TModel> : IStep<TModel, TModel>
+    {
+    }
+
+    public class RootStep<TModel> : IRoot<TModel>
     {
         public TModel Execute(TModel model)
         {
