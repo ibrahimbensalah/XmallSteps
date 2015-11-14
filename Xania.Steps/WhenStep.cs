@@ -19,18 +19,19 @@ namespace Xania.Steps
         {
             if (_predicate(model))
             {
-                _trueStep.Execute(model);
+                _trueStep.Execute(model, new StepVisitor<TResult>());
             }
             else if (_falseStep != null)
             {
-                _falseStep.Execute(model);
+                _falseStep.Execute(model, new StepVisitor<TResult>());
             }
             return model;
         }
 
         public void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
         {
-            throw new NotImplementedException();
+            Execute(model);
+            stepVisitor.Visit(model);
         }
     }
 }

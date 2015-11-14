@@ -9,15 +9,10 @@
             _step = step;
         }
 
-        public virtual TModel Execute(TModel model)
-        {
-            _step.Execute(model);
-            return model;
-        }
-
         public void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
         {
-            throw new System.NotImplementedException();
+            _step.Execute(model, new StepVisitor<TResult>(r => { }));
+            stepVisitor.Visit(model);
         }
     }
 }

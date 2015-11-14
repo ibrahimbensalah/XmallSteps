@@ -33,16 +33,6 @@ namespace Xania.Steps
             return new ForEachStep<TModel>(step);
         }
 
-        public static ForEachStep<TModel, TResult> ForEach<TModel, TResult>(IStep<TModel, TResult> step)
-        {
-            return new ForEachStep<TModel, TResult>(step);
-        }
-
-        public static ForEachStep<TModel, TResult> ForEach<TModel, TResult>(Func<TModel, TResult> selector)
-        {
-            return new ForEachStep<TModel, TResult>(new SelectStep<TModel, TResult>(selector));
-        }
-
         public static SequenceStep<TModel> Sequence<TModel>(params IStep<TModel>[] steps)
         {
             var sequence = new SequenceStep<TModel>();

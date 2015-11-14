@@ -62,7 +62,7 @@ namespace Xania.Steps.Tests
         {
             // arrange
             var random = new Random();
-            var composeStep = Step.Select((Organisation c) => c.Persons)
+            var composeStep = Step.Select((Organisation c) => c.Persons).Each()
                 .Assign(p => p.Age, random.Next())
                 .Select(p => p.Age);
 
@@ -109,8 +109,8 @@ namespace Xania.Steps.Tests
             };
 
             // act
-            var agesStep = Step.Select((Organisation o) => o.Persons)
-                .ForEach(new PersonAgeStep());
+            var agesStep = Step.Select((Organisation o) => o.Persons).Each()
+                .Compose(new PersonAgeStep());
 
             // assert
             agesStep.Execute(organisation).ShouldBeEquivalentTo(new[] { 1, 2 });
@@ -130,7 +130,7 @@ namespace Xania.Steps.Tests
             };
 
             // act
-            var agesStep = Step.Select((Organisation o) => o.Persons)
+            var agesStep = Step.Select((Organisation o) => o.Persons).Each()
                 .Assign(p => p.Age, 123)
                 .Select(p => p.Age);
 
@@ -153,7 +153,7 @@ namespace Xania.Steps.Tests
 
             // act
             var agesStep = Step.Root<Organisation>()
-                .Select(o => o.Persons)
+                .Select(o => o.Persons).Each()
                 .Assign(p => p.Age, 123)
                 .Select(p => p.Age);
 
@@ -166,7 +166,7 @@ namespace Xania.Steps.Tests
         {
             var selectStep = Step.Root<Organisation>()
                 .Invoke(o => o.Init())
-                .Select(o => o.Persons)
+                .Select(o => o.Persons).Each()
                 .Select(p => p.Age);
 
             selectStep.Execute(_organisation).Should().BeEquivalentTo(60, 50, 55);
@@ -176,7 +176,7 @@ namespace Xania.Steps.Tests
         public void BranchMergeTest()
         {
             var selectStep = Step.Root<Organisation>()
-                .Compose(Step.Root<Organisation>().Invoke(o => o.Init()).Select(o => o.Persons).Select(p => p.Age));
+                .Compose(Step.Root<Organisation>().Invoke(o => o.Init()).Select(o => o.Persons).Each().Select(p => p.Age));
 
             selectStep.Execute(_organisation).ShouldBeEquivalentTo(new[] { 60, 50, 55 });
         }
@@ -186,8 +186,8 @@ namespace Xania.Steps.Tests
         {
             var selectStep = Step.Root<Organisation>()
                 .Invoke(o => o.Init())
-                .Branch(Step.Root<Organisation>().Select(o => o.Persons).Select(p => p.Age))
-                .Select(o => o.Persons)
+                .Branch(Step.Root<Organisation>().Select(o => o.Persons).Each().Select(p => p.Age))
+                .Select(o => o.Persons).Each()
                 .Select(p => p.Age);
 
             var result = selectStep.Execute(_organisation);
@@ -198,7 +198,7 @@ namespace Xania.Steps.Tests
         public void BranchSelectorTest()
         {
             var branchStep = Step.Root<Organisation>()
-                .Branch(o => o.Persons, r => r.Assign(p => p.Age, 123))
+                .Branch(o => o.Persons, r => r.Each().Assign(p => p.Age, 123))
                 .Branch(r => r.Invoke(o => o.Init()));
 
             // act

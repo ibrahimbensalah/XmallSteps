@@ -25,12 +25,19 @@ namespace Xania.Steps.Tests
         {
             // arrange
             var root = Step.Root<Organisation>().Select(o => o.Persons).Each();
+            var org = new Organisation
+            {
+                Persons =
+                {
+                    new Person(),
+                    new Person()
+                }
+            };
             var visitor = Substitute.For<IStepVisitor<Person>>();
-            var org = new Organisation();
             // act
             root.Execute(org, visitor);
             // assert
-            visitor.ReceivedCalls().Should().HaveCount(0);
+            visitor.ReceivedCalls().Should().HaveCount(org.Persons.Count);
         }
     }
 

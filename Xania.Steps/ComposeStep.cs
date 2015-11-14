@@ -15,30 +15,25 @@ namespace Xania.Steps
 
         public void Execute(TModel model)
         {
-            _step2.Execute(_step1.Execute(model));
+            throw new InvalidOperationException();
+            // _step2.Execute(_step1.Execute(model));
         }
     }
 
-    public class ComposeStep<TModel, TSubResult, TResult> : IStep<TModel, TResult>
+    public class ComposeStep<TRoot, TModel, TResult> : IStep<TRoot, TResult>
     {
-        private readonly IStep<TModel, TSubResult> _step1;
-        private readonly IStep<TSubResult, TResult> _step2;
+        private readonly IStep<TRoot, TModel> _step1;
+        private readonly IStep<TModel, TResult> _step2;
 
-        public ComposeStep(IStep<TModel, TSubResult> step1, IStep<TSubResult, TResult> step2)
+        public ComposeStep(IStep<TRoot, TModel> step1, IStep<TModel, TResult> step2)
         {
             _step1 = step1;
             _step2 = step2;
         }
 
-        public TResult Execute(TModel model)
+        public void Execute(TRoot model, IStepVisitor<TResult> stepVisitor)
         {
-            var sub = _step1.Execute(model);
-            return _step2.Execute(sub);
-        }
-
-        public void Execute(TModel model, IStepVisitor<TResult> stepVisitor)
-        {
-            IStepVisitor<TSubResult> stepVisitor2 = new StepVisitor<TSubResult>(sub => _step2.Execute(sub, stepVisitor));
+            var stepVisitor2 = new StepVisitor<TModel>(m => _step2.Execute(m, stepVisitor));
             _step1.Execute(model, stepVisitor2);
         }
 
@@ -48,6 +43,10 @@ namespace Xania.Steps
     {
         private readonly Action<T> _action;
 
+        public StepVisitor()
+        {
+        }
+
         public StepVisitor(Action<T> action)
         {
             _action = action;
@@ -55,7 +54,8 @@ namespace Xania.Steps
 
         public void Visit(T model)
         {
-            _action(model);
+            if (_action != null)
+                _action(model);
         }
     }
 }

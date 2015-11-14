@@ -14,29 +14,9 @@ namespace Xania.Steps
             return Step.Compose(step1, step2);
         }
 
-        public static IStep<TRoot> ForEach<TRoot, TResult>(this IStep<TRoot, IEnumerable<TResult>> step1, IStep<TResult> step2)
-        {
-            return Step.Compose(step1, Step.ForEach(step2));
-        }
-
-        public static IStep<TRoot, IEnumerable<TResult>> ForEach<TRoot, TSubResult, TResult>(this IStep<TRoot, IEnumerable<TSubResult>> step1, IStep<TSubResult, TResult> step2)
-        {
-            return Step.Compose(step1, Step.ForEach(step2));
-        }
-
-        public static IStep<TRoot, IEnumerable<TResult>> Select<TRoot, TSubResult, TResult>(this IStep<TRoot, IEnumerable<TSubResult>> step1, Func<TSubResult, TResult> step2)
-        {
-            return Step.Compose(step1, Step.ForEach(step2));
-        }
-
         public static IStep<TRoot, TResult> Select<TRoot, TSubResult, TResult>(this IStep<TRoot, TSubResult> step1, Func<TSubResult, TResult> step2)
         {
             return Step.Compose(step1, Step.Select(step2));
-        }
-
-        public static IStep<TRoot, IEnumerable<TModel>> Assign<TRoot, TModel, TResult>(this IStep<TRoot, IEnumerable<TModel>> step1, Expression<Func<TModel, TResult>> assignProperty, TResult value)
-        {
-            return step1.ForEach(new AssignStep<TModel, TResult>(assignProperty, value));
         }
 
         public static IStep<TRoot, TModel> Assign<TRoot, TModel, TResult>(this IStep<TRoot, TModel> step1, Expression<Func<TModel, TResult>> assignProperty, TResult value)
@@ -92,5 +72,13 @@ namespace Xania.Steps
         {
             return root.Compose(new EachStep<TModel>());
         }
+
+        public static IList<TResult> Execute<TRoot, TResult>(this IStep<TRoot, TResult> step, TRoot root)
+        {
+            var list = new List<TResult>();
+            var visitor = new StepVisitor<TResult>(list.Add);
+            step.Execute(root, visitor);
+            return list;
+        } 
     }
 }
