@@ -6,5 +6,10 @@ namespace Xania.Steps
         {
             return model.Age;
         }
+
+        public override void Execute(Person model, IStepVisitor<int> stepVisitor)
+        {
+            stepVisitor.Visit(model.Age);
+        }
     }
 }

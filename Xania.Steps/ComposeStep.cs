@@ -35,5 +35,27 @@ namespace Xania.Steps
             var sub = _step1.Execute(model);
             return _step2.Execute(sub);
         }
+
+        public void Execute(TModel model, IStepVisitor<TResult> stepVisitor)
+        {
+            IStepVisitor<TSubResult> stepVisitor2 = new StepVisitor<TSubResult>(sub => _step2.Execute(sub, stepVisitor));
+            _step1.Execute(model, stepVisitor2);
+        }
+
+    }
+
+    public class StepVisitor<T>: IStepVisitor<T>
+    {
+        private readonly Action<T> _action;
+
+        public StepVisitor(Action<T> action)
+        {
+            _action = action;
+        }
+
+        public void Visit(T model)
+        {
+            _action(model);
+        }
     }
 }

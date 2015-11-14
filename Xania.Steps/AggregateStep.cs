@@ -21,5 +21,10 @@ namespace Xania.Steps
         {
             return _aggregateFunc(model);
         }
+
+        public override void Execute(IEnumerable<TValue> model, IStepVisitor<TValue> stepVisitor)
+        {
+            stepVisitor.Visit(Execute(model));
+        }
     }
 }

@@ -8,10 +8,17 @@ namespace Xania.Steps
     public interface IStep<in TModel, out TValue>
     {
         TValue Execute(TModel model);
+
+        void Execute(TModel model, IStepVisitor<TValue> stepVisitor);
     }
 
     public interface IValue<out TValue>
     {
         TValue Get();
+    }
+
+    public interface IStepVisitor<in TModel>
+    {
+        void Visit(TModel model);
     }
 }

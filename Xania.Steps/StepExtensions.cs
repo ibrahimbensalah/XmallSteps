@@ -87,5 +87,10 @@ namespace Xania.Steps
         {
             return step1.Compose(new WhenStep<TModel, TResult>(predicate, trueStep, falseStep));
         }
+
+        public static IStep<TRoot, TModel> Each<TRoot, TModel>(this IStep<TRoot, IEnumerable<TModel>> root)
+        {
+            return root.Compose(new EachStep<TModel>());
+        }
     }
 }

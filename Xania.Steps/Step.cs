@@ -81,11 +81,17 @@ namespace Xania.Steps
         {
             return model;
         }
+
+        public void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
+        {
+            stepVisitor.Visit(model);
+        }
     }
 
     public abstract class Step<TModel, TResult> : IStep<TModel, TResult>
     {
         public abstract TResult Execute(TModel model);
+        public abstract void Execute(TModel model, IStepVisitor<TResult> stepVisitor);
 
         public static implicit operator Step<TModel, TResult>(Expression<Func<TModel, TResult>> func)
         {

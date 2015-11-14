@@ -27,5 +27,10 @@ namespace Xania.Steps
             }
             return model;
         }
+
+        public void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

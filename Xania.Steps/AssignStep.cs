@@ -23,6 +23,11 @@ namespace Xania.Steps
             return model;
         }
 
+        public override void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
+        {
+            stepVisitor.Visit(Execute(model));
+        }
+
         private Action<TModel, TValue> Compile()
         {
             if (_assignFunc == null)
