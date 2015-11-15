@@ -15,17 +15,12 @@ namespace Xania.Steps
             _value = value;
         }
 
-        public override TModel Execute(TModel model)
+        public override void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
         {
             var assignFunc = Compile();
             assignFunc(model, _value);
 
-            return model;
-        }
-
-        public override void Execute(TModel model, IStepVisitor<TModel> stepVisitor)
-        {
-            stepVisitor.Visit(Execute(model));
+            stepVisitor.Visit(model);
         }
 
         private Action<TModel, TValue> Compile()

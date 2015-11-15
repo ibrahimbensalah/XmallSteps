@@ -11,11 +11,6 @@ namespace Xania.Steps
             _selector = selector;
         }
 
-        public override TResult Execute(TModel model)
-        {
-            return _selector(model);
-        }
-
         public override void Execute(TModel model, IStepVisitor<TResult> stepVisitor)
         {
             stepVisitor.Visit(_selector(model));

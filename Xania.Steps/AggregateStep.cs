@@ -12,19 +12,9 @@ namespace Xania.Steps
             _aggregateFunc = aggregateFunc;
         }
 
-        public TValue Execute(params TValue[] values)
-        {
-            return _aggregateFunc(values);
-        }
-
-        public override TValue Execute(IEnumerable<TValue> model)
-        {
-            return _aggregateFunc(model);
-        }
-
         public override void Execute(IEnumerable<TValue> model, IStepVisitor<TValue> stepVisitor)
         {
-            stepVisitor.Visit(Execute(model));
+            stepVisitor.Visit(_aggregateFunc(model));
         }
     }
 }

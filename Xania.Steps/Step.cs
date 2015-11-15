@@ -23,14 +23,9 @@ namespace Xania.Steps
             return new AssignStep<TModel, TValue>(propertyExpression, value);
         }
 
-        public static ConstantStep<TValue> Constant<TValue>(TValue value)
+        public static EachStep<TModel> Each<TModel>()
         {
-            return new ConstantStep<TValue>(value);
-        }
-
-        public static ForEachStep<TModel> ForEach<TModel>(IStep<TModel> step)
-        {
-            return new ForEachStep<TModel>(step);
+            return new EachStep<TModel>();
         }
 
         public static SequenceStep<TModel> Sequence<TModel>(params IStep<TModel>[] steps)
@@ -80,7 +75,6 @@ namespace Xania.Steps
 
     public abstract class Step<TModel, TResult> : IStep<TModel, TResult>
     {
-        public abstract TResult Execute(TModel model);
         public abstract void Execute(TModel model, IStepVisitor<TResult> stepVisitor);
 
         public static implicit operator Step<TModel, TResult>(Expression<Func<TModel, TResult>> func)

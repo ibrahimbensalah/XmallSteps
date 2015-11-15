@@ -40,7 +40,7 @@ namespace Xania.Steps.Tests
             var step = Step.Aggregate<int>(g => g.Sum());
 
             // act & verify
-            step.Execute(1, 2, 3).Should().Be(6);
+            step.Execute(1, 2, 3).Should().BeEquivalentTo(6);
         }
 
         [Test]
@@ -92,7 +92,7 @@ namespace Xania.Steps.Tests
             var person2 = new Person();
 
             // act
-            Step.ForEach(new AssignAgeStep(123)).Execute(new[] { person1, person2 });
+            Step.Each<Person>().Compose(new PersonAgeStep()).Execute(new[] { person1, person2 });
 
             // assert
             person1.Age.Should().Be(123);
@@ -186,8 +186,8 @@ namespace Xania.Steps.Tests
         {
             var selectStep = Step.Root<Organisation>()
                 .Invoke(o => o.Init())
-                .Branch(Step.Root<Organisation>().Select(o => o.Persons).Each().Select(p => p.Age))
-                .Select(o => o.Persons).Each()
+                .Branch(Step.Root<Organisation>().Each(o => o.Persons).Select(p => p.Age))
+                .Each(o => o.Persons)
                 .Select(p => p.Age);
 
             var result = selectStep.Execute(_organisation);

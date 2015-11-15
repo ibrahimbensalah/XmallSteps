@@ -43,7 +43,6 @@
     <Compile Include="AssignStep.cs" />
     <Compile Include="BranchStep.cs" />
     <Compile Include="ComposeStep.cs" />
-    <Compile Include="ConstantStep.cs" />
     <Compile Include="ForEachStep.cs" />
     <Compile Include="IStep.cs" />
     <Compile Include="LazyValue.cs" />

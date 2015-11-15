@@ -73,12 +73,25 @@ namespace Xania.Steps
             return root.Compose(new EachStep<TModel>());
         }
 
+        public static IStep<TRoot, TResult> Each<TRoot, TModel, TResult>(this IStep<TRoot, TModel> root, Func<TModel, IEnumerable<TResult>> selectExpression)
+        {
+            return root.Select(selectExpression).Each();
+        }
+
         public static IList<TResult> Execute<TRoot, TResult>(this IStep<TRoot, TResult> step, TRoot root)
         {
             var list = new List<TResult>();
             var visitor = new StepVisitor<TResult>(list.Add);
             step.Execute(root, visitor);
             return list;
-        } 
+        }
+
+        public static IList<TResult> Execute<TRoot, TResult>(this IStep<IEnumerable<TRoot>, TResult> step, params TRoot[] root)
+        {
+            var list = new List<TResult>();
+            var visitor = new StepVisitor<TResult>(list.Add);
+            step.Execute(root, visitor);
+            return list;
+        }
     }
 }

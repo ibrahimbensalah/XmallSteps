@@ -12,20 +12,4 @@ namespace Xania.Steps
                 stepVisitor.Visit(m);
         }
     }
-
-    public class ForEachStep<TModel> : IStep<IEnumerable<TModel>>
-    {
-        private readonly IStep<TModel> _step;
-
-        public ForEachStep(IStep<TModel> step)
-        {
-            _step = step;
-        }
-
-        public void Execute(IEnumerable<TModel> models)
-        {
-            foreach (var item in models)
-                _step.Execute(item);
-        }
-    }
 }

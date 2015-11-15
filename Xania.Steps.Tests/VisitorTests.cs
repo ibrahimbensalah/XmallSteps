@@ -12,9 +12,9 @@ namespace Xania.Steps.Tests
         {
             // arrange
             var root = Step.Root<Organisation>();
-            var visitor = Substitute.For<IStepVisitor<Organisation>>();
             var org = new Organisation();
             // act
+            var visitor = Substitute.For<IStepVisitor<Organisation>>();
             root.Execute(org, visitor);
             // assert
             visitor.Received().Visit(org);
