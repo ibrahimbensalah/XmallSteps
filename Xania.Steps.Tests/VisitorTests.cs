@@ -11,7 +11,7 @@ namespace Xania.Steps.Tests
         public void RootVisitorTest()
         {
             // arrange
-            var root = Step.Root<Organisation>();
+            var root = Step.Id<Organisation>();
             var org = new Organisation();
             // act
             var visitor = Substitute.For<IStepVisitor<Organisation>>();
@@ -24,7 +24,7 @@ namespace Xania.Steps.Tests
         public void EachVisitorTest()
         {
             // arrange
-            var root = Step.Root<Organisation>().Select(o => o.Persons).Each();
+            var root = Step.Id<Organisation>().Select(o => o.Persons).Each();
             var org = new Organisation
             {
                 Persons =

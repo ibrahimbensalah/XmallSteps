@@ -48,8 +48,8 @@ namespace Xania.Steps
             Func<TSubModel, TModel> modelSelector,
             Func<IRoot<TModel>, IStep<TModel, TResult>> branchBuilder)
         {
-            var step2 = branchBuilder(Step.Root<TModel>());
-            var selectStep = Step.Root<TSubModel>().Select(modelSelector);
+            var step2 = branchBuilder(Step.Id<TModel>());
+            var selectStep = Step.Id<TSubModel>().Select(modelSelector);
             return step1.Branch(r => selectStep.Compose(step2));
         }
 

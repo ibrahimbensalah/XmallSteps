@@ -46,6 +46,7 @@
     <Compile Include="ForEachStep.cs" />
     <Compile Include="IStep.cs" />
     <Compile Include="LazyValue.cs" />
+    <Compile Include="LinqExtensions.cs" />
     <Compile Include="SelectStep.cs" />
     <Compile Include="Organisation.cs" />
     <Compile Include="Person.cs" />

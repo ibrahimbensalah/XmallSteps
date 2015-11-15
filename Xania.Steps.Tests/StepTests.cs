@@ -73,16 +73,16 @@ namespace Xania.Steps.Tests
             _organisation.Persons.Select(e => e.Age).ShouldBeEquivalentTo(result);
         }
 
-        [Test]
-        public void SequenceStepTest()
-        {
-            var sequence = Step.Sequence(new AssignAgeStep(1), new AssignAgeStep(2));
+        //[Test]
+        //public void SequenceStepTest()
+        //{
+        //    var sequence = Step.Sequence(new AssignAgeStep(1), new AssignAgeStep(2));
 
-            var person = new Person();
-            sequence.Execute(person);
+        //    var person = new Person();
+        //    sequence.Execute(person);
 
-            person.Age.Should().Be(2);
-        }
+        //    person.Age.Should().Be(2);
+        //}
 
         [Test]
         public void ForEachStepTest()
@@ -92,7 +92,7 @@ namespace Xania.Steps.Tests
             var person2 = new Person();
 
             // act
-            Step.Each<Person>().Compose(new PersonAgeStep()).Execute(new[] { person1, person2 });
+            Step.Each<Person>().Compose(new AssignAgeStep(123)).Execute(person1, person2);
 
             // assert
             person1.Age.Should().Be(123);

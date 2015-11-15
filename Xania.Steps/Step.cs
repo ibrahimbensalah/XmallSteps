@@ -52,7 +52,7 @@ namespace Xania.Steps
 
         public static IRoot<TModel> Root<TModel>()
         {
-            return new RootStep<TModel>();
+            return new IdentityStep<TModel>();
         }
     }
 
@@ -60,7 +60,7 @@ namespace Xania.Steps
     {
     }
 
-    public class RootStep<TModel> : IRoot<TModel>
+    public class IdentityStep<TModel> : IRoot<TModel>
     {
         public TModel Execute(TModel model)
         {
