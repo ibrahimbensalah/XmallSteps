@@ -7,6 +7,11 @@ namespace Xania.Steps
 {
     public class Step
     {
+        public static IdentityStep<TModel> Id<TModel>()
+        {
+            return new IdentityStep<TModel>();
+        }
+
         public static SelectStep<TContainer, TModel> Select<TContainer, TModel>(Func<TContainer, TModel> modelSelector)
         {
             return new SelectStep<TContainer, TModel>(modelSelector);

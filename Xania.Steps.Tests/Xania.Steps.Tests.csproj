@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctorTests.cs" />
     <Compile Include="StepDesignTests.cs" />
     <Compile Include="StepTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
