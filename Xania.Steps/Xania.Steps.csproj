@@ -51,6 +51,7 @@
     <Compile Include="Core\Functor.cs" />
     <Compile Include="Core\FunctionExtensions.cs" />
     <Compile Include="Core\IFunction.cs" />
+    <Compile Include="Core\EnumerableMonad.cs" />
     <Compile Include="ForEachStep.cs" />
     <Compile Include="IStep.cs" />
     <Compile Include="LazyValue.cs" />
