@@ -3,23 +3,23 @@ using System.Collections.Generic;
 
 namespace Xania.Steps.Core
 {
-    public class EachMonad<T> : IEnumerable<T>
-    {
-        private readonly IEnumerable<T> _enumerable;
+    //public class EachMonad<T> : IEnumerable<T>
+    //{
+    //    private readonly IEnumerable<T> _enumerable;
 
-        public EachMonad(IEnumerable<T> enumerable)
-        {
-            _enumerable = enumerable;
-        }
+    //    public EachMonad(IEnumerable<T> enumerable)
+    //    {
+    //        _enumerable = enumerable;
+    //    }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _enumerable.GetEnumerator();
-        }
+    //    public IEnumerator<T> GetEnumerator()
+    //    {
+    //        return _enumerable.GetEnumerator();
+    //    }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
+    //    IEnumerator IEnumerable.GetEnumerator()
+    //    {
+    //        return GetEnumerator();
+    //    }
+    //}
 }

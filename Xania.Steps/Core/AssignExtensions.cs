@@ -9,14 +9,14 @@ namespace Xania.Steps.Core
 {
     public static class AssignExtensions
     {
-        public static IFunction<TRoot, TModel> Assign<TRoot, TModel, TProperty>(this IFunction<TRoot, TModel> func1, Expression<Func<TModel, TProperty>> propertyExpression, TProperty property)
+        public static IFunctor<TRoot, TModel> Assign<TRoot, TModel, TProperty>(this IFunctor<TRoot, TModel> func1, Expression<Func<TModel, TProperty>> propertyExpression, TProperty property)
         {
-            var assign = new AssignFunctor<TModel, TProperty>(propertyExpression, property);
+            var assign = new AssignFunctor<TModel, TProperty>( propertyExpression, property);
             return func1.Compose(assign);
         }
     }
 
-    public class AssignFunctor<TModel, TProperty>: IFunction<TModel, TModel>
+    public class AssignFunctor<TModel, TProperty>: IFunctor<TModel, TModel>
     {
         private readonly Expression<Func<TModel, TProperty>> _propertyExpr;
         private readonly TProperty _value;
@@ -28,12 +28,13 @@ namespace Xania.Steps.Core
             _value = value;
         }
 
-        public TModel Execute(TModel model)
+        public TModel Execute(TModel root)
         {
+            Console.Write("[assign]");
             var assignFunc = Compile();
-            assignFunc(model, _value);
+            assignFunc(root, _value);
 
-            return model;
+            return root;
         }
         private Action<TModel, TProperty> Compile()
         {
