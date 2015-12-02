@@ -173,12 +173,26 @@ namespace Xania.Steps.Tests
         {
             var selectStep =
                 from o in Functor.Id<Organisation>()
-                    .Invoke(o => o.Init())
+                    // .Invoke(o => o.Init())
                     .Branch(f => f.SelectMany(o => o.Persons).Select(p => p.Age))
                 from p in o.Persons
                 select p.Age;
 
             var result = selectStep.Execute(_organisation);
+            result.ShouldBeEquivalentTo(new[] { 60, 50, 55 });
+        }
+
+        [Test]
+        public void JoinTest()
+        {
+            var personFunc = Functor.Id<Organisation>().SelectMany(e => e.Persons);
+            var personFunc2 = Functor.Id<Organisation>().Select(e => e.Persons).Select(e => e.Age);
+            var joinFunctor =
+                from o in personFunc
+                join o1 in personFunc2 on o.TotalAge equals o1.TotalAge
+                select o.Count() + o1.Count();
+
+            var result = joinFunctor.Execute(_organisation);
             result.ShouldBeEquivalentTo(new[] { 60, 50, 55 });
         }
     }

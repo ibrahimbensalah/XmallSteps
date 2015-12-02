@@ -26,5 +26,16 @@ namespace Xania.Steps.Core
         {
             return func1.Compose(Functor.Create(func2));
         }
+
+        public static IFunctor<TRoot, TResult> Join<TRoot, TOuter, TInner, TKey, TResult>(this IFunctor<TRoot, TOuter> outer, IFunctor<TRoot, TInner> inner, Func<TRoot, TKey> outerKeySelector, Func<TRoot, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
+        {
+            if (outer == null) throw Error.ArgumentNull("outer");
+            if (inner == null) throw Error.ArgumentNull("inner");
+            if (outerKeySelector == null) throw Error.ArgumentNull("outerKeySelector");
+            if (innerKeySelector == null) throw Error.ArgumentNull("innerKeySelector");
+            if (resultSelector == null) throw Error.ArgumentNull("resultSelector");
+            throw new Exception();
+            // return JoinIterator<TOuter, TInner, TKey, TResult>(outer, inner, outerKeySelector, innerKeySelector, resultSelector, null);
+        }
     }
 }
