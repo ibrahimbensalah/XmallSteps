@@ -2,12 +2,12 @@
 
 namespace Xania.Steps.Core
 {
-    public class ComposeFunctor<TRoot, TModel, TResult> : IFunctor<TRoot, TResult>
+    public class ComposeFunction<TRoot, TModel, TResult> : IFunction<TRoot, TResult>
     {
-        private readonly IFunctor<TRoot, TModel> _func1;
-        private readonly IFunctor<TModel, TResult> _func2;
+        private readonly IFunction<TRoot, TModel> _func1;
+        private readonly IFunction<TModel, TResult> _func2;
 
-        public ComposeFunctor(IFunctor<TRoot, TModel> func1, IFunctor<TModel, TResult> func2)
+        public ComposeFunction(IFunction<TRoot, TModel> func1, IFunction<TModel, TResult> func2)
         {
             _func1 = func1;
             _func2 = func2;

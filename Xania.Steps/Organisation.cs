@@ -18,4 +18,13 @@ namespace Xania.Steps
             this.TotalAge = Persons.Sum(p => p.Age);
         }
     }
+
+    public class Contract
+    {
+        public Contract()
+        {
+            Organisations = new List<Organisation>();
+        }
+        public ICollection<Organisation> Organisations { get; private set; } 
+    }
 }

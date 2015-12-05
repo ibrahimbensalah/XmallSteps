@@ -6,9 +6,14 @@ namespace Xania.Steps
 {
     public class Person
     {
+        public Person()
+        {
+            Grades = new List<int>();
+        }
+
         public int Age { get; set; }
 
-        public ICollection<int> Grades { get; set; }
+        public ICollection<int> Grades { get; private set; }
 
         public int GetAge()
         {

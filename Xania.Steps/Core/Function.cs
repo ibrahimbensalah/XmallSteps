@@ -4,13 +4,13 @@ using System.Linq.Expressions;
 
 namespace Xania.Steps.Core
 {
-    public class Functor<TModel, TResult> : IFunctor<TModel, TResult>
+    public class Function<TModel, TResult> : IFunction<TModel, TResult>
     {
         private readonly string _name;
 
         private readonly Func<TModel, TResult> _func;
 
-        public Functor(string name, Func<TModel, TResult> func)
+        public Function(string name, Func<TModel, TResult> func)
         {
             _name = name;
             _func = func;
@@ -28,25 +28,25 @@ namespace Xania.Steps.Core
         }
     }
 
-    public class Functor
+    public class Function
     {
-        public static IdentityFunctor<T> Id<T>()
+        public static IdentityFunction<T> Id<T>()
         {
-            return new IdentityFunctor<T>();
+            return new IdentityFunction<T>();
         }
 
-        public static IdentityFunctor<IEnumerable<T>> Each<T>()
+        public static IdentityFunction<IEnumerable<T>> Each<T>()
         {
             return Id<IEnumerable<T>>();
         }
 
-        public static Functor<TModel, TResult> Create<TModel, TResult>(Func<TModel, TResult> func)
+        public static Function<TModel, TResult> Create<TModel, TResult>(Func<TModel, TResult> func)
         {
-            return new Functor<TModel, TResult>(String.Empty, func);
+            return new Function<TModel, TResult>(String.Empty, func);
         }
     }
 
-    public class IdentityFunctor<T>: IFunctor<T, T>
+    public class IdentityFunction<T>: IFunction<T, T>
     {
         public T Execute(T root)
         {

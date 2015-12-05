@@ -10,7 +10,7 @@ using Xania.Steps.Core;
 
 namespace Xania.Steps.Tests
 {
-    public class FunctorTests
+    public class FunctionTests
     {
         private Organisation _organisation;
 
@@ -31,21 +31,21 @@ namespace Xania.Steps.Tests
         [Test]
         public void TrivialFunctionTest()
         {
-            var fun = new Functor<int, int>("f", a => a * 2);
+            var fun = new Function<int, int>("f", a => a * 2);
             fun.Execute(1).Should().Be(2);
         }
 
         [Test]
         public void ComposeFunctionTest()
         {
-            var fun = new Functor<int, int>("f", a => a * 2).Compose(new Functor<int, int>("g", a => a * 2));
+            var fun = new Function<int, int>("f", a => a * 2).Compose(new Function<int, int>("g", a => a * 2));
             fun.Execute(1).Should().Be(4);
         }
 
         [Test]
         public void EachMonadTest()
         {
-            var fun = new Functor<Organisation, IEnumerable<Person>>("f", o => o.Persons);
+            var fun = new Function<Organisation, IEnumerable<Person>>("f", o => o.Persons);
             fun.Execute(new Organisation()).Should().BeEmpty();
         }
 
@@ -53,7 +53,7 @@ namespace Xania.Steps.Tests
         public void MonadCompositionTest()
         {
             var organisation = new Organisation { Persons = { new Person { Age = 10 }, new Person { Age = 11 } } };
-            var eachPersonFunc = new Functor<Organisation, IEnumerable<Person>>("g", o => o.Persons);
+            var eachPersonFunc = new Function<Organisation, IEnumerable<Person>>("g", o => o.Persons);
             var fun = eachPersonFunc.Select(e => e.Age);
 
             fun.Execute(organisation).Should().BeEquivalentTo(new[] { 10, 11 });
@@ -65,9 +65,9 @@ namespace Xania.Steps.Tests
         {
             // arrange
             var random = new Random();
-            var composeStep = Functor.Id<Organisation>()
-                .SelectMany(c => c.Persons)
-                .Select(new AssignFunctor<Person, int>(p => p.Age, random.Next()))
+            var composeStep = Function.Id<Organisation>()
+                .Select(c => c.Persons)
+                .Select(new AssignFunction<Person, int>(p => p.Age, random.Next()))
                 .Select(p => p.Age);
 
             // act
@@ -87,8 +87,8 @@ namespace Xania.Steps.Tests
 
             // act
 
-            var func = Functor.Each<Person>()
-                .Select(new AssignFunctor<Person, int>(p => p.Age, 132));
+            var func = Function.Each<Person>()
+                .Select(new AssignFunction<Person, int>(p => p.Age, 132));
 
             foreach(var person in func.Execute(person1, person2))
                 person.Age.Should().Be(132);
@@ -104,8 +104,8 @@ namespace Xania.Steps.Tests
             };
 
             // act
-            var agesStep = Functor.Id<Organisation>()
-                .SelectMany(o => o.Persons)
+            var agesStep = Function.Id<Organisation>()
+                .Select(o => o.Persons)
                 .Select(p => p.Age);
 
             // assert
@@ -126,8 +126,8 @@ namespace Xania.Steps.Tests
             };
 
             // act
-            var agesStep = Functor.Id<Organisation>()
-                .SelectMany(o => o.Persons)
+            var agesStep = Function.Id<Organisation>()
+                .Select(o => o.Persons)
                 .ForEach(p => { p.Age = 123; })
                 .Select(p => p.Age);
 
@@ -138,7 +138,7 @@ namespace Xania.Steps.Tests
         [Test]
         public void BranchMergeTest()
         {
-            var selectStep = Functor.Id<Organisation>()
+            var selectStep = Function.Id<Organisation>()
                 .Invoke(o => o.Init())
                 .Select(o => o.Persons)
                 .Select(p => p.Age);
@@ -149,9 +149,9 @@ namespace Xania.Steps.Tests
         [Test]
         public void InvokeTest()
         {
-            var selectStep = Functor.Id<Organisation>()
+            var selectStep = Function.Id<Organisation>()
                 .Invoke(o => o.Init())
-                .SelectMany(o => o.Persons)
+                .Select(o => o.Persons)
                 .Select(p => p.Age);
 
             selectStep.Execute(_organisation).Should().BeEquivalentTo(60, 50, 55);
@@ -160,7 +160,7 @@ namespace Xania.Steps.Tests
         [Test]
         public void LinqTest()
         {
-            var q = from f in Functor.Id<Organisation>()
+            var q = from f in Function.Id<Organisation>()
                 from p in f.Persons
                 select new{f, p};
 
@@ -171,29 +171,36 @@ namespace Xania.Steps.Tests
         [Test]
         public void BranchTest()
         {
-            var selectStep =
-                from o in Functor.Id<Organisation>()
-                    // .Invoke(o => o.Init())
-                    .Branch(f => f.SelectMany(o => o.Persons).Select(p => p.Age))
+            var selectStep = from o in Function.Id<Organisation>()
                 from p in o.Persons
                 select p.Age;
 
             var result = selectStep.Execute(_organisation);
-            result.ShouldBeEquivalentTo(new[] { 60, 50, 55 });
+            result.ShouldBeEquivalentTo(new[] {60, 50, 55});
+        }
+
+        [Test]
+        public void ShouldBeAbleToNestMultipleFromConstructs()
+        {
+            var q = from c in Function.Id<Contract>()
+                from o in c.Organisations
+                from p in o.Persons
+                from g in p.Grades
+                select g;
         }
 
         [Test]
         public void JoinTest()
         {
-            var personFunc = Functor.Id<Organisation>().SelectMany(e => e.Persons);
-            var personFunc2 = Functor.Id<Organisation>().Select(e => e.Persons).Select(e => e.Age);
+            var personFunc = Function.Id<Organisation>().Select(e => e.Persons);
+            var ageFunc = Function.Id<Organisation>().Select(e => e.Persons).Select(e => e.Age);
             var joinFunctor =
-                from o in personFunc
-                join o1 in personFunc2 on o.TotalAge equals o1.TotalAge
-                select o.Count() + o1.Count();
+                from person in personFunc
+                join age in ageFunc on person.Age equals age
+                select person.Age + age;
 
             var result = joinFunctor.Execute(_organisation);
-            result.ShouldBeEquivalentTo(new[] { 60, 50, 55 });
+            result.ShouldBeEquivalentTo(new[] { 120, 100, 110 });
         }
     }
 }

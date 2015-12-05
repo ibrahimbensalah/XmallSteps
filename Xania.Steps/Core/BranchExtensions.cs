@@ -8,11 +8,11 @@ namespace Xania.Steps.Core
 {
     public static class BranchExtensions
     {
-        public static IFunctor<TRoot, TResult> Branch<TRoot, TResult, TBranchResult>(this IFunctor<TRoot, TResult> func,
-            Func<IFunctor<TRoot, TResult>, IFunctor<TResult, TBranchResult>> branchBuilder)
+        public static IFunction<TRoot, TResult> Branch<TRoot, TResult, TBranchResult>(this IFunction<TRoot, TResult> func,
+            Func<IFunction<TRoot, TResult>, IFunction<TResult, TBranchResult>> branchBuilder)
         {
             var branchFunc = branchBuilder(func);
-            return func.Compose(Functor.Create((TResult m) =>
+            return func.Compose(Function.Create((TResult m) =>
             {
                 branchFunc.Execute(m);
                 return m;
