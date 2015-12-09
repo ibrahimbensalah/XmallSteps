@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Xania.Steps.Core
@@ -30,14 +31,19 @@ namespace Xania.Steps.Core
 
     public class Function
     {
-        public static IdentityFunction<T> Id<T>()
+        public static Identity<T> Id<T>()
         {
-            return new IdentityFunction<T>();
+            return new Identity<T>();
         }
 
-        public static IdentityFunction<IEnumerable<T>> Each<T>()
+        public static Identity<IEnumerable<T>> Each<T>()
         {
             return Id<IEnumerable<T>>();
+        }
+
+        public static Identity<IQueryable<T>> Query<T>()
+        {
+            return Id<IQueryable<T>>();
         }
 
         public static Function<TModel, TResult> Create<TModel, TResult>(Func<TModel, TResult> func)
@@ -46,7 +52,7 @@ namespace Xania.Steps.Core
         }
     }
 
-    public class IdentityFunction<T>: IFunction<T, T>
+    public class Identity<T>: IFunction<T, T>
     {
         public T Execute(T root)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Xania.Steps.Core
 {
-    public static class EachExtensions
+    public static class EnumerableExtensions
     {
         public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TModel, TResult>(
             this IFunction<TRoot, IEnumerable<TModel>> func1, IFunction<TModel, TResult> func2)
@@ -35,6 +35,18 @@ namespace Xania.Steps.Core
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, IEnumerable<TCollection>> collectionFunc, Func<TSource, TCollection, TResult> resultSelector)
         {
             return new SelectManyFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(collectionFunc), resultSelector);
+        }
+
+        public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
+            this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, IFunction<TSource, bool>> predicateFunc)
+        {
+            return source.Select(p => p.Where(x => predicateFunc(x).Execute(x)));
+        }
+
+        public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
+            this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, bool> predicateFunc)
+        {
+            return source.Select(p => p.Where(predicateFunc));
         }
 
         public static IFunction<TSource, IEnumerable<TModel>> ForEach<TSource, TModel>(

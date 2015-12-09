@@ -202,5 +202,18 @@ namespace Xania.Steps.Tests
             var result = joinFunctor.Execute(_organisation);
             result.ShouldBeEquivalentTo(new[] { 120, 100, 110 });
         }
+
+        [Test]
+        public void FunctionWhereTest()
+        {
+            var isAdult = Function.Create((Person p) => p.Age >= 18);
+            var getAdults = 
+                from p in Function.Each<Person>()
+                where isAdult
+                where p.Age < 30
+                select p;
+
+            getAdults.Execute(new Person() { Age = 1 }, new Person() { Age = 21 }, new Person() { Age = 41 }).Should().HaveCount(1);
+        }
     }
 }

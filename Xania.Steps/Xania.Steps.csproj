@@ -46,11 +46,11 @@
     <Compile Include="Core\AssignExtensions.cs" />
     <Compile Include="Core\BranchExtensions.cs" />
     <Compile Include="Core\ComposeFunction.cs" />
-    <Compile Include="Core\EachMonad.cs" />
-    <Compile Include="Core\EachExtensions.cs" />
+    <Compile Include="Core\EnumerableExtensions.cs" />
     <Compile Include="Core\Function.cs" />
     <Compile Include="Core\FunctionExtensions.cs" />
     <Compile Include="Core\IFunction.cs" />
+    <Compile Include="Core\JoinFunction.cs" />
     <Compile Include="Core\SelectFunction.cs" />
     <Compile Include="Core\SelectManyFunction.cs" />
     <Compile Include="ForEachStep.cs" />
