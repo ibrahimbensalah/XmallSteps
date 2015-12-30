@@ -42,6 +42,7 @@
     <Compile Include="AssignExtensions.cs" />
     <Compile Include="BranchExtensions.cs" />
     <Compile Include="Core\ComposeFunction.cs" />
+    <Compile Include="QueryableExtensions.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="Core\Function.cs" />
     <Compile Include="FunctionExtensions.cs" />
