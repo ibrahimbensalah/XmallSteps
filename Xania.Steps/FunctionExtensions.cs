@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Xania.Steps.Core;
 
-namespace Xania.Steps.Core
+namespace Xania.Steps
 {
     public static class FunctionExtensions
     {

@@ -25,6 +25,6 @@ namespace Xania.Steps
         {
             Organisations = new List<Organisation>();
         }
-        public ICollection<Organisation> Organisations { get; private set; } 
+        public ICollection<Organisation> Organisations { get; private set; }
     }
 }

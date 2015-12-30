@@ -14,11 +14,11 @@ namespace Xania.Steps.Core
 
         public JoinFunction(IFunction<TRoot, IEnumerable<TOuter>> outerFunc, IFunction<TRoot, IEnumerable<TInner>> innerFunc, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
         {
-            if (outerFunc == null) throw Error.ArgumentNull("outer");
-            if (innerFunc == null) throw Error.ArgumentNull("inner");
-            if (outerKeySelector == null) throw Error.ArgumentNull("outerKeySelector");
-            if (innerKeySelector == null) throw Error.ArgumentNull("innerKeySelector");
-            if (resultSelector == null) throw Error.ArgumentNull("resultSelector");
+            if (outerFunc == null) throw new ArgumentNullException("outerFunc");
+            if (innerFunc == null) throw new ArgumentNullException("innerFunc");
+            if (outerKeySelector == null) throw new ArgumentNullException("outerKeySelector");
+            if (innerKeySelector == null) throw new ArgumentNullException("innerKeySelector");
+            if (resultSelector == null) throw new ArgumentNullException("resultSelector");
 
             _outerFunc = outerFunc;
             _innerFunc = innerFunc;

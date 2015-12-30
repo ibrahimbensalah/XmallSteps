@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xania.Steps.Core;
 
-namespace Xania.Steps.Core
+namespace Xania.Steps
 {
     public static class BranchExtensions
     {
