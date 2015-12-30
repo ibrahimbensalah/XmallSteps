@@ -56,16 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionTests.cs" />
-    <Compile Include="StepDesignTests.cs" />
     <Compile Include="StepTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VisitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xania.Steps.Design\Xania.Steps.Design.csproj">
-      <Project>{AE3B776D-A76A-4391-97BC-4B30B95606D0}</Project>
-      <Name>Xania.Steps.Design</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xania.Steps\Xania.Steps.csproj">
       <Project>{ce8c3fb6-42bc-4c8b-a209-32555fdb53f6}</Project>
       <Name>Xania.Steps</Name>
