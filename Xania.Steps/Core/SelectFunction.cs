@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Xania.Steps.Core
 {
@@ -39,6 +40,27 @@ namespace Xania.Steps.Core
         public TResult Execute(TRoot root)
         {
             return _selector(root, _func.Execute(root));
+        }
+    }
+
+    public class QueryableSelectFunction<TRoot, TSource, TCollection, TResult> : IFunction<TRoot, IQueryable<TResult>>
+    {
+        private readonly IFunction<TRoot, TSource> _sourceFunc;
+        private readonly IFunction<TSource, IQueryable<TCollection>> _collectionFunc;
+        private readonly Expression<Func<TCollection, TResult>> _resultSelector;
+
+        public QueryableSelectFunction(IFunction<TRoot, TSource> sourceFunc, IFunction<TSource, IQueryable<TCollection>> collectionFunc, Expression<Func<TCollection, TResult>> resultSelector)
+        {
+            _sourceFunc = sourceFunc;
+            _collectionFunc = collectionFunc;
+            _resultSelector = resultSelector;
+        }
+
+        public IQueryable<TResult> Execute(TRoot root)
+        {
+            var s = _sourceFunc.Execute(root);
+            var c = _collectionFunc.Execute(s);
+            return c.Select(_resultSelector);
         }
     }
 }

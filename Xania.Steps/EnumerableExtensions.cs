@@ -10,15 +10,16 @@ namespace Xania.Steps
         public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TModel, TResult>(
             this IFunction<TRoot, IEnumerable<TModel>> func1, IFunction<TModel, TResult> func2)
         {
-            return Select(func1, func2.Execute);
-        }
-
-        public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TSource, TResult>(
-            this IFunction<TRoot, IEnumerable<TSource>> func1, Func<TSource, TResult> func2)
-        {
-            var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(func2));
+            var bindFunction = Function.Create((IEnumerable<TModel> m) => m.Select(func2.Execute));
             return func1.Compose(bindFunction);
         }
+
+        //public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TSource, TResult>(
+        //    this IFunction<TRoot, IEnumerable<TSource>> func1, Func<TSource, TResult> func2)
+        //{
+        //    var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(func2));
+        //    return func1.Compose(bindFunction);
+        //}
 
         public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
             this IFunction<TRoot, TSource> source, Func<TRoot, TSource, TResult> func2)

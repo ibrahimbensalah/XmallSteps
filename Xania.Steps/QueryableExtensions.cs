@@ -8,20 +8,15 @@ namespace Xania.Steps
 {
     public static class QueryableExtensions
     {
-        public static IFunction<TRoot, IQueryable<TResult>> Select<TRoot, TModel, TResult>(
-            this IFunction<TRoot, IQueryable<TModel>> func1, IFunction<TModel, TResult> func2)
-        {
-            return Select(func1, func2.Execute);
-        }
-
         public static IFunction<TRoot, IQueryable<TResult>> Select<TRoot, TSource, TResult>(
-            this IFunction<TRoot, IQueryable<TSource>> func1, Func<TSource, TResult> func2)
+            this IFunction<TRoot, IQueryable<TSource>> func1, Expression<Func<TSource, IEnumerable<TResult>>> func2)
         {
-            throw new NotImplementedException();
+            var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(func2));
+            return func1.Compose(bindFunction);
         }
 
         public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
-            this IFunction<TRoot, TSource> source, Func<TRoot, TSource, TResult> func2)
+            this IFunction<TRoot, TSource> source, Expression<Func<TRoot, TSource, TResult>> func2)
         {
             throw new NotImplementedException();
         }
@@ -33,9 +28,9 @@ namespace Xania.Steps
         }
 
         public static IFunction<TRoot, IQueryable<TResult>> SelectMany<TRoot, TSource, TCollection, TResult>(
-            this IFunction<TRoot, IQueryable<TSource>> source, Expression<Func<TSource, IEnumerable<TCollection>>> collectionFunc, Func<TSource, TCollection, TResult> resultSelector)
+            this IFunction<TRoot, IQueryable<TSource>> source, Expression<Func<TSource, IEnumerable<TCollection>>> collectionFunc, Expression<Func<TSource, TCollection, TResult>> resultSelector)
         {
-            throw new NotImplementedException();
+            return new QueryableSelectManyFunction<TRoot, TSource, TCollection, TResult>(source, collectionFunc, resultSelector);
         }
 
         public static IFunction<TRoot, IQueryable<TSource>> Where<TRoot, TSource>(
@@ -55,10 +50,5 @@ namespace Xania.Steps
         {
             throw new NotImplementedException();
         }
-
-        //public static TResult Execute<TModel, TResult>(this IFunction<IQueryable<TModel>, TResult> func, params TModel[] args)
-        //{
-        //    return func.Execute(args);
-        //}
     }
 }
