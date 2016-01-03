@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xania.Steps.Core;
 
 namespace Xania.Steps
@@ -27,18 +28,6 @@ namespace Xania.Steps
             });
 
             return func1.Compose(func2);
-        }
-
-        public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
-            this IFunction<TRoot, TSource> func1, Func<TSource, TResult> func2)
-        {
-            return func1.Compose(Function.Create(func2));
-        }
-
-        public static IFunction<TRoot, IEnumerable<TResult>> Join<TRoot, TOuter, TInner, TKey, TResult>(this IFunction<TRoot, IEnumerable<TOuter>> outerFunc, IFunction<TRoot, IEnumerable<TInner>> innerFunc, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
-        {
-            return new JoinFunction<TRoot, TOuter, TInner, TKey, TResult>(outerFunc, innerFunc, outerKeySelector,
-                innerKeySelector, resultSelector);
         }
     }
 }

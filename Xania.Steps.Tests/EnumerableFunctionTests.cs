@@ -42,7 +42,6 @@ namespace Xania.Steps.Tests
             _organisation.Persons.Select(e => e.Age).ShouldBeEquivalentTo(result);
         }
 
-
         [Test]
         public void ForEachStepTest()
         {

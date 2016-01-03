@@ -14,17 +14,17 @@ namespace Xania.Steps
             return func1.Compose(bindFunction);
         }
 
-        //public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TSource, TResult>(
-        //    this IFunction<TRoot, IEnumerable<TSource>> func1, Func<TSource, TResult> func2)
-        //{
-        //    var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(func2));
-        //    return func1.Compose(bindFunction);
-        //}
+        public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TSource, TResult>(
+            this IFunction<TRoot, IEnumerable<TSource>> sourceFunc, Func<TSource, TResult> selector)
+        {
+            var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(selector));
+            return sourceFunc.Compose(bindFunction);
+        }
 
         public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
-            this IFunction<TRoot, TSource> source, Func<TRoot, TSource, TResult> func2)
+            this IFunction<TRoot, TSource> source, Func<TSource, TResult> func2)
         {
-            return new SelectFunction<TRoot, TSource, TResult>(source, func2);
+            return source.Compose(func2);
         }
 
         public static IFunction<TRoot, IEnumerable<TResult>> SelectMany<TRoot, TSource, TCollection, TResult>(
@@ -39,16 +39,31 @@ namespace Xania.Steps
             return new SelectManyFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(collectionFunc), resultSelector);
         }
 
+        public static IFunction<TRoot, IEnumerable<TResult>> SelectMany<TRoot, TSource, TResult>(
+            this IFunction<TRoot, IEnumerable<TSource>> func1, Func<TSource, IEnumerable<TResult>> func2)
+        {
+            var bindFunction = Function.Create((IEnumerable<TSource> source) => source.SelectMany(func2));
+            return func1.Compose(bindFunction);
+        }
+
+        public static IFunction<TRoot, IEnumerable<TResult>> Join<TRoot, TOuter, TInner, TKey, TResult>(this IFunction<TRoot, IEnumerable<TOuter>> outerFunc, IFunction<TRoot, IEnumerable<TInner>> innerFunc, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
+        {
+            return new JoinFunction<TRoot, TOuter, TInner, TKey, TResult>(outerFunc, innerFunc, outerKeySelector,
+                innerKeySelector, resultSelector);
+        }
+
         public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, IFunction<TSource, bool>> predicateFunc)
         {
-            return source.Select(p => p.Where(x => predicateFunc(x).Execute(x)));
+            var bindFunction = Function.Create((IEnumerable<TSource> x) => x.Where(_ => predicateFunc(_).Execute(_)));
+            return source.Compose(bindFunction);
         }
 
         public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, bool> predicateFunc)
         {
-            return source.Select(p => p.Where(predicateFunc));
+            var bindFunction = Function.Create((IEnumerable<TSource> x) => x.Where(predicateFunc));
+            return source.Compose(bindFunction);
         }
 
         public static IFunction<TSource, IEnumerable<TModel>> ForEach<TSource, TModel>(
@@ -68,6 +83,11 @@ namespace Xania.Steps
         public static TResult Execute<TModel, TResult>(this IFunction<IEnumerable<TModel>, TResult> func, params TModel[] args)
         {
             return func.Execute(args);
+        }
+
+        public static TResult Execute<TModel, TResult>(this IFunction<IQueryable<TModel>, TResult> source, params TModel[] args)
+        {
+            return source.Execute(args.AsQueryable());
         }
     }
 }
