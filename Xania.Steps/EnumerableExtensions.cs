@@ -10,14 +10,14 @@ namespace Xania.Steps
         public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TModel, TResult>(
             this IFunction<TRoot, IEnumerable<TModel>> func1, IFunction<TModel, TResult> func2)
         {
-            var bindFunction = Function.Create((IEnumerable<TModel> m) => m.Select(func2.Execute));
+            var bindFunction = Function.Create(string.Format("select {0}", func2), (IEnumerable<TModel> m) => m.Select(func2.Execute));
             return func1.Compose(bindFunction);
         }
 
         public static IFunction<TRoot, IEnumerable<TResult>> Select<TRoot, TSource, TResult>(
             this IFunction<TRoot, IEnumerable<TSource>> sourceFunc, Func<TSource, TResult> selector)
         {
-            var bindFunction = Function.Create((IEnumerable<TSource> m) => m.Select(selector));
+            var bindFunction = Function.Create(string.Format("select {0}", selector), (IEnumerable<TSource> m) => m.Select(selector));
             return sourceFunc.Compose(bindFunction);
         }
 
@@ -30,19 +30,19 @@ namespace Xania.Steps
         public static IFunction<TRoot, IEnumerable<TResult>> SelectMany<TRoot, TSource, TCollection, TResult>(
             this IFunction<TRoot, TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            return new SelectFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(collectionSelector), resultSelector);
+            return new SelectFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(string.Format("select many {0}", collectionSelector), collectionSelector), resultSelector);
         }
 
         public static IFunction<TRoot, IEnumerable<TResult>> SelectMany<TRoot, TSource, TCollection, TResult>(
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, IEnumerable<TCollection>> collectionFunc, Func<TSource, TCollection, TResult> resultSelector)
         {
-            return new SelectManyFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(collectionFunc), resultSelector);
+            return new SelectManyFunction<TRoot, TSource, TCollection, TResult>(source, Function.Create(string.Format("select many {0}", collectionFunc), collectionFunc), resultSelector);
         }
 
         public static IFunction<TRoot, IEnumerable<TResult>> SelectMany<TRoot, TSource, TResult>(
             this IFunction<TRoot, IEnumerable<TSource>> func1, Func<TSource, IEnumerable<TResult>> func2)
         {
-            var bindFunction = Function.Create((IEnumerable<TSource> source) => source.SelectMany(func2));
+            var bindFunction = Function.Create(string.Format("select many {0}", func2), (IEnumerable<TSource> source) => source.SelectMany(func2));
             return func1.Compose(bindFunction);
         }
 
@@ -55,21 +55,22 @@ namespace Xania.Steps
         public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, IFunction<TSource, bool>> predicateFunc)
         {
-            var bindFunction = Function.Create((IEnumerable<TSource> x) => x.Where(_ => predicateFunc(_).Execute(_)));
+            var predicate = predicateFunc(default(TSource));
+            var bindFunction = Function.Create(string.Format("where predicate {0}", predicate), (IEnumerable<TSource> x) => x.Where(predicate.Execute));
             return source.Compose(bindFunction);
         }
 
         public static IFunction<TRoot, IEnumerable<TSource>> Where<TRoot, TSource>(
             this IFunction<TRoot, IEnumerable<TSource>> source, Func<TSource, bool> predicateFunc)
         {
-            var bindFunction = Function.Create((IEnumerable<TSource> x) => x.Where(predicateFunc));
+            var bindFunction = Function.Create(string.Format("where {0}", predicateFunc), (IEnumerable<TSource> x) => x.Where(predicateFunc));
             return source.Compose(bindFunction);
         }
 
         public static IFunction<TSource, IEnumerable<TModel>> ForEach<TSource, TModel>(
             this IFunction<TSource, IEnumerable<TModel>> func1, Action<TModel> action)
         {
-            var bindFunction = Function.Create((IEnumerable<TModel> m) =>
+            var bindFunction = Function.Create("for each", (IEnumerable<TModel> m) =>
             {
                 var enumerable = m as TModel[] ?? m.ToArray();
                 foreach (var i in enumerable)

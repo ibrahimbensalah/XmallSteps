@@ -27,7 +27,6 @@ namespace Xania.Steps
 
         public TModel Execute(TModel root)
         {
-            Console.Write("[assign]");
             var assignFunc = Compile();
             assignFunc(root, _value);
 

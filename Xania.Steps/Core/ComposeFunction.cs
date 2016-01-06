@@ -15,9 +15,10 @@ namespace Xania.Steps.Core
 
         public TResult Execute(TRoot root)
         {
-            var a = _func1.Execute(root);
-            Console.Write(" | ");
-            return _func2.Execute(a);
+            var intermediate = _func1.Execute(root);
+            var result = _func2.Execute(intermediate);
+            Console.WriteLine("{0} \r\n\t\t-> {1}", _func2, result);
+            return result;
         }
     }
 }
