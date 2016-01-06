@@ -126,10 +126,9 @@ namespace Xania.Steps.Tests
         [Test]
         public void FunctionWhereTest()
         {
-            var isAdult = Function.Create((Person p) => p.Age >= 18);
             var getAdults =
                 from p in Function.Each<Person>()
-                where isAdult
+                where p.Age >= 18
                 where p.Age < 30
                 select p;
 

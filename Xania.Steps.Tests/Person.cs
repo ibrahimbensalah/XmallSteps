@@ -11,6 +11,8 @@ namespace Xania.Steps
             Grades = new List<int>();
         }
 
+        public int Id { get; set; }
+
         public int Age { get; set; }
 
         public ICollection<int> Grades { get; private set; }

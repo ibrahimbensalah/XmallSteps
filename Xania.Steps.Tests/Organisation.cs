@@ -10,6 +10,7 @@ namespace Xania.Steps
             Persons = new List<Person>();
         }
 
+        public int Id { get; set; }
         public ICollection<Person> Persons { get; private set; }
         public int TotalAge { get; set; }
 

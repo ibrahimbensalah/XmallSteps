@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using FluentAssertions;
 using NUnit.Framework;
 using Xania.Steps.Core;
@@ -120,6 +121,19 @@ namespace Xania.Steps.Tests
 
             var result = joinFunctor.Execute(_organisation);
             result.ShouldBeEquivalentTo(new[] { 120, 100, 110 });
+        }
+
+
+        [Test]
+        public void FunctionWhereTest()
+        {
+            var getYoungAdults =
+                from p in Function.Query<Person>()
+                where p.Age >= 18
+                where p.Age < 30
+                select p;
+
+            getYoungAdults.Execute(new Person() { Age = 1 }, new Person() { Age = 21 }, new Person() { Age = 41 }).Should().HaveCount(1);
         }
     }
 }
