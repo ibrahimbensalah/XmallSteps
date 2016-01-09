@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElssCalculationModelTests.cs" />
     <Compile Include="EnumerableFunctionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="Organisation.cs" />
