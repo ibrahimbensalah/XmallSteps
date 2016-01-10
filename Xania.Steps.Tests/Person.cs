@@ -21,5 +21,10 @@ namespace Xania.Steps
         {
             return Age;
         }
+
+        public override string ToString()
+        {
+            return "person";
+        }
     }
 }

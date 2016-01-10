@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using Effort;
 using FluentAssertions;
 using NUnit.Framework;
@@ -44,6 +45,28 @@ namespace Xania.Steps.Tests
             public IDbSet<Person> People { get; set; }
 
             public IDbSet<Organisation> Organisations { get; set; }
+        }
+
+        [Test]
+        public void DisposableTest()
+        {
+            // a -> M a >>= (a -> M b) -> M b
+            // WebClient -> Disposable WebClient => (WebClient -> Disposable string) -> Disposable string
+
+            var client = new Disposable<WebClient>();
+            var result = client.Execute(c => c.DownloadString("http://time.gov/actualtime.cgi"));
+            Console.WriteLine(result);
+        }
+    }
+
+    public class Disposable<TDisposable> where TDisposable : IDisposable, new()
+    {
+        public TResult Execute<TResult>(Func<TDisposable, TResult> func)
+        {
+            using (var disp = new TDisposable())
+            {
+                return func(disp);
+            }
         }
     }
 }

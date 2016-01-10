@@ -18,6 +18,11 @@ namespace Xania.Steps
         {
             this.TotalAge = Persons.Sum(p => p.Age);
         }
+
+        public override string ToString()
+        {
+            return "organisation";
+        }
     }
 
     public class Contract

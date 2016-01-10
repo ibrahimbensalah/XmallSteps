@@ -73,7 +73,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Elss\Calc.cs" />
+    <Compile Include="Elss\Constant.cs" />
+    <Compile Include="Elss\ParameterReplacer.cs" />
+    <Compile Include="Elss\Unit.cs" />
     <Compile Include="EntityFrameworkTests.cs" />
+    <Compile Include="Elss\ElssCalculationModelTests.cs" />
     <Compile Include="EnumerableFunctionTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="Organisation.cs" />

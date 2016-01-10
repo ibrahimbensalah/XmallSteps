@@ -62,6 +62,8 @@ namespace Xania.Steps.Core
 
         public IQueryable<TResult> Execute(TRoot root)
         {
+            Console.WriteLine("join using " + root);
+
             var outer = _outerFunc.Execute(root);
             var inner = _innerFunc.Execute(root);
 

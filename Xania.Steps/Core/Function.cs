@@ -13,13 +13,14 @@ namespace Xania.Steps.Core
 
         public Function(string name, Func<TModel, TResult> func)
         {
+            if (string.IsNullOrEmpty(name)) 
+                throw new ArgumentNullException("name");
             _name = name;
             _func = func;
         }
 
         public TResult Execute(TModel root)
         {
-            Console.Write(_name);
             return _func(root);
         }
 
@@ -43,7 +44,6 @@ namespace Xania.Steps.Core
 
         public TResult Execute(TModel root)
         {
-            Console.Write(_name);
             return _func.Compile()(root);
         }
 
@@ -70,9 +70,9 @@ namespace Xania.Steps.Core
             return Id<IQueryable<T>>();
         }
 
-        public static Function<TModel, TResult> Create<TModel, TResult>(Func<TModel, TResult> func)
+        public static Function<TModel, TResult> Create<TModel, TResult>(string name, Func<TModel, TResult> func)
         {
-            return new Function<TModel, TResult>(String.Empty, func);
+            return new Function<TModel, TResult>(name, func);
         }
 
         public static ExpressionFunction<TModel, TResult> FromExpression<TModel, TResult>(Expression<Func<TModel, TResult>> func)
@@ -85,8 +85,12 @@ namespace Xania.Steps.Core
     {
         public T Execute(T root)
         {
-            Console.Write("1<{0}>", typeof(T).Name);
             return root;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("1<{0}>", typeof(T).Name);
         }
     }
 }
