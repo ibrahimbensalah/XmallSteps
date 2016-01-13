@@ -21,7 +21,7 @@ namespace Xania.Steps
             return sourceFunc.Compose(bindFunction);
         }
 
-        public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
+        public static IFunction<TRoot, TResult> Member<TRoot, TSource, TResult>(
             this IFunction<TRoot, TSource> source, Func<TSource, TResult> func2)
         {
             return source.Compose(func2);
@@ -67,7 +67,7 @@ namespace Xania.Steps
             return source.Compose(bindFunction);
         }
 
-        public static IFunction<TSource, IEnumerable<TModel>> ForEach<TSource, TModel>(
+        public static IFunction<TSource, IEnumerable<TModel>> Execute<TSource, TModel>(
             this IFunction<TSource, IEnumerable<TModel>> func1, Action<TModel> action)
         {
             var bindFunction = Function.Create("for each", (IEnumerable<TModel> m) =>

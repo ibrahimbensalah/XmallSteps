@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -61,41 +60,34 @@ namespace Xania.Steps.Tests.Elss
             var calcA = Calc.Constant(() => new AssessmentOutput { A = 1 });
             var calcMd = id.Select(a => new AssessmentOutput { Md = a.B });
 
-            var calc = calcMd.Merge(calcA);
+            var calc = calcMd.CombineResult(calcA);
 
             var result = calc.Execute(new Assessment { B = 2 });
             result.A.Should().Be(1);
             result.Md.Should().Be(2m);
-
-            //var calc = 
-            //    from a in calcA
-            //    join b in calcFee on a.Id equals b.Id
-            //    select a;
         }
 
         [Test]
-        public void Should_combine_results()
+        public void Should_pack_result()
         {
             var productAgreementFunc = 
-                from pa in Function.Id<ProductAgreement>()
+                from a in Function.Id<Assessment>()
+                from pa in a.ProductAgreements
                 select new ProductAgreementOutput
                 {
                     DoubleObligo = pa.Obligo * 2
                 };
 
-            var fullPath = Function.Query<Assessment>().Select(e => e.ProductAgreements).Select(e => e.ElementType);
-            var q = 
-                from i in Function.Id<Assessment>()
-                from pa in i.ProductAgreements
-
+            var productAgreementPack = 
+                from productAgreementOutputs in Function.Query<Assessment>().Select(productAgreementFunc)
                 select new AssessmentOutput
                 {
-                    ProductAgreements = {i}
+                    ProductAgreements = productAgreementOutputs
                 };
 
-            var result = q.Execute(new Assessment
+            var result = productAgreementPack.Execute(new Assessment
             {
-                ProductAgreements = { new ProductAgreement {  Obligo = 2 } }
+                ProductAgreements = { new ProductAgreement { Obligo = 2 } }
             });
 
             result.SelectMany(e => e.ProductAgreements).Select(e => e.DoubleObligo).Should().BeEquivalentTo(4m);
@@ -144,10 +136,10 @@ namespace Xania.Steps.Tests.Elss
 
             public override string ToString()
             {
-                return String.Format(@"{{ A = {0}, B = {1} }}", A, B);
+                return String.Format(@"{{ A = {0}, B = {1}, Md = {2} }}", A, B, Md);
             }
 
-            public ICollection<ProductAgreementOutput> ProductAgreements { get; private set; }
+            public IEnumerable<ProductAgreementOutput> ProductAgreements { get; set; }
         }
     }
 

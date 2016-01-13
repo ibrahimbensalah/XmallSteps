@@ -31,7 +31,7 @@ namespace Xania.Steps.Tests
             // arrange
             var random = new Random();
             var composeStep = Function.Id<Organisation>()
-                .Select(c => c.Persons)
+                .Member(c => c.Persons)
                 .Select(new AssignFunction<Person, int>(p => p.Age, random.Next()))
                 .Select(p => p.Age);
 
@@ -69,7 +69,7 @@ namespace Xania.Steps.Tests
 
             // act
             var agesStep = Function.Id<Organisation>()
-                .Select(o => o.Persons)
+                .Member(o => o.Persons)
                 .Select(p => p.Age);
 
             // assert
@@ -112,8 +112,8 @@ namespace Xania.Steps.Tests
         [Test]
         public void JoinTest()
         {
-            var personFunc = Function.Id<Organisation>().Select(e => e.Persons);
-            var ageFunc = Function.Id<Organisation>().Select(e => e.Persons).Select(e => e.Age);
+            var personFunc = Function.Id<Organisation>().Member(e => e.Persons);
+            var ageFunc = Function.Id<Organisation>().Member(e => e.Persons).Select(e => e.Age);
             var joinFunctor =
                 from person in personFunc
                 join age in ageFunc on person.Age equals age

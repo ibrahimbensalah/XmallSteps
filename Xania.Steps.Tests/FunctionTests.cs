@@ -69,8 +69,8 @@ namespace Xania.Steps.Tests
 
             // act
             var agesStep = Function.Id<Organisation>()
-                .Select(o => o.Persons)
-                .ForEach(p => { p.Age = 123; })
+                .Member(o => o.Persons)
+                .Execute(p => { p.Age = 123; })
                 .Select(p => p.Age);
 
             // assert
@@ -82,7 +82,7 @@ namespace Xania.Steps.Tests
         {
             var selectStep = Function.Id<Organisation>()
                 .Invoke(o => o.Init())
-                .Select(o => o.Persons)
+                .Member(o => o.Persons)
                 .Select(p => p.Age);
 
             selectStep.Execute(_organisation).ShouldBeEquivalentTo(new[] { 60, 50, 55 });
@@ -93,7 +93,7 @@ namespace Xania.Steps.Tests
         {
             var selectStep = Function.Id<Organisation>()
                 .Invoke(o => o.Init())
-                .Select(o => o.Persons)
+                .Member(o => o.Persons)
                 .Select(p => p.Age);
 
             selectStep.Execute(_organisation).Should().BeEquivalentTo(60, 50, 55);
