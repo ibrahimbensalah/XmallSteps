@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -71,12 +73,57 @@ namespace Xania.Steps.Tests.Elss
             //    select a;
         }
 
+        [Test]
+        public void Should_combine_results()
+        {
+            var productAgreementFunc = 
+                from pa in Function.Id<ProductAgreement>()
+                select new ProductAgreementOutput
+                {
+                    DoubleObligo = pa.Obligo * 2
+                };
+
+            var fullPath = Function.Query<Assessment>().Select(e => e.ProductAgreements).Select(e => e.ElementType);
+            var q = 
+                from i in Function.Id<Assessment>()
+                from pa in i.ProductAgreements
+
+                select new AssessmentOutput
+                {
+                    ProductAgreements = {i}
+                };
+
+            var result = q.Execute(new Assessment
+            {
+                ProductAgreements = { new ProductAgreement {  Obligo = 2 } }
+            });
+
+            result.SelectMany(e => e.ProductAgreements).Select(e => e.DoubleObligo).Should().BeEquivalentTo(4m);
+        }
+
         private class Assessment
         {
+            public Assessment()
+            {
+                ProductAgreements = new List<ProductAgreement>();
+            }
             public decimal A { get; set; }
             public decimal B { get; set; }
             public decimal? C { get; set; }
             public decimal D { get; set; }
+
+            public ICollection<ProductAgreement> ProductAgreements { get; private set; }
+        }
+
+        class ProductAgreement
+        {
+            public decimal Obligo { get; set; }
+        }
+
+        internal class ProductAgreementOutput
+        {
+            public decimal Obligo { get; set; }
+            public decimal DoubleObligo { get; set; }
         }
 
         private class MasterData
@@ -86,6 +133,10 @@ namespace Xania.Steps.Tests.Elss
 
         internal class AssessmentOutput
         {
+            public AssessmentOutput()
+            {
+                ProductAgreements = new List<ProductAgreementOutput>();
+            }
             public int Id { get; set; }
             public decimal A { get; set; }
             public decimal B { get; set; }
@@ -95,6 +146,8 @@ namespace Xania.Steps.Tests.Elss
             {
                 return String.Format(@"{{ A = {0}, B = {1} }}", A, B);
             }
+
+            public ICollection<ProductAgreementOutput> ProductAgreements { get; private set; }
         }
     }
 
