@@ -12,7 +12,7 @@ namespace Xania.Steps.Tests.Elss
 
         private static Expression<Func<Unit, TModel>> Unit2(Expression<Func<TModel>> expression)
         {
-            return Expression.Lambda<Func<Unit, TModel>>(expression.Body, Expression.Parameter(typeof (Unit)));
+            return System.Linq.Expressions.Expression.Lambda<Func<Unit, TModel>>(expression.Body, System.Linq.Expressions.Expression.Parameter(typeof (Unit)));
         }
 
         public TModel Execute()

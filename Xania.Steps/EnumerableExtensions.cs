@@ -21,7 +21,7 @@ namespace Xania.Steps
             return sourceFunc.Compose(bindFunction);
         }
 
-        public static IFunction<TRoot, TResult> Select<TRoot, TSource, TResult>(
+        public static IFunction<TRoot, TResult> Member<TRoot, TSource, TResult>(
             this IFunction<TRoot, TSource> source, Func<TSource, TResult> func2)
         {
             return source.Compose(func2);

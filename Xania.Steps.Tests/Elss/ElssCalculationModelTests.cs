@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Xania.Steps.Core;
@@ -59,16 +58,15 @@ namespace Xania.Steps.Tests.Elss
             var calcA = Calc.Constant(() => new AssessmentOutput { A = 1 });
             var calcMd = id.Select(a => new AssessmentOutput { Md = a.B });
 
-            var calc = calcMd.Merge(calcA);
+            var calc = calcMd.CombineResult(calcA);
 
             var result = calc.Execute(new Assessment { B = 2 });
             result.A.Should().Be(1);
             result.Md.Should().Be(2m);
 
-            //var calc = 
-            //    from a in calcA
-            //    join b in calcFee on a.Id equals b.Id
-            //    select a;
+            var cccc =
+                from a in Function.Query<Assessment>()
+                select a;
         }
 
         private class Assessment
@@ -93,7 +91,7 @@ namespace Xania.Steps.Tests.Elss
 
             public override string ToString()
             {
-                return String.Format(@"{{ A = {0}, B = {1} }}", A, B);
+                return String.Format(@"{{ A = {0}, B = {1}, Md = {2} }}", A, B, Md);
             }
         }
     }
