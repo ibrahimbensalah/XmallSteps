@@ -12,11 +12,11 @@ namespace Xania.Steps.Tests.Elss
         [Test]
         public void Test()
         {
-            var calcC = Calc.Select((Assessment a) => a.A + a.B);
-            var calcD = (calcC + Calc.Select((Assessment a) => a.B));
-            var calcE = (calcD - Calc.Select((Assessment a) => a.B));
+            var creditFee = Calc.Select((TariffProposal a) => a.A + a.B);
+            var calcD = (creditFee + Calc.Select((TariffProposal a) => a.B));
+            var calcE = (calcD - Calc.Select((TariffProposal a) => a.B));
 
-            var result = calcE.Execute(new Assessment
+            var result = calcE.Execute(new TariffProposal
             {
                 A = 1,
                 B = 2
@@ -28,12 +28,12 @@ namespace Xania.Steps.Tests.Elss
         [Test]
         public void Test2()
         {
-            var calcA = Calc.Select((Assessment a) => new AssessmentOutput { A = 1 });
-            var calcB = Calc.Select((Assessment a) => new AssessmentOutput { B = a.B });
+            var calcA = Calc.Select((TariffProposal a) => new TarifProposalOutput { A = 1 });
+            var calcB = Calc.Select((TariffProposal a) => new TarifProposalOutput { B = a.B });
 
             var calc = calcA & calcB;
 
-            var result = calc.Execute(new Assessment { A = 1, B = 2 });
+            var result = calc.Execute(new TariffProposal { A = 10, B = 2 });
             result.A.Should().Be(1);
             result.B.Should().Be(2);
         }
@@ -41,14 +41,14 @@ namespace Xania.Steps.Tests.Elss
         [Test]
         public void Test3()
         {
-            var id = Calc.Id<Assessment>();
+            var id = Calc.Id<TariffProposal>();
 
-            var calcA = id.Select(a => new AssessmentOutput { A = a.A });
-            var calcB = id.Select(a => new AssessmentOutput { B = a.B });
+            var calcA = id.Select(a => new TarifProposalOutput { A = a.A });
+            var calcB = id.Select(a => new TarifProposalOutput { B = a.B });
 
             var calc = calcA & calcB;
 
-            var result = calc.Execute(new Assessment { A = 1, B = 2 });
+            var result = calc.Execute(new TariffProposal { A = 1, B = 2 });
             result.A.Should().Be(1);
             result.B.Should().Be(2);
         }
@@ -56,13 +56,13 @@ namespace Xania.Steps.Tests.Elss
         [Test]
         public void Test4()
         {
-            var id = Calc.Id<Assessment>();
-            var calcA = Calc.Constant(() => new AssessmentOutput { A = 1 });
-            var calcMd = id.Select(a => new AssessmentOutput { Md = a.B });
+            var id = Calc.Id<TariffProposal>();
+            var calcA = Calc.Constant(() => new TarifProposalOutput { A = 1 });
+            var calcMd = id.Select(a => new TarifProposalOutput { Md = a.B });
 
             var calc = calcMd.CombineResult(calcA);
 
-            var result = calc.Execute(new Assessment { B = 2 });
+            var result = calc.Execute(new TariffProposal { B = 2 });
             result.A.Should().Be(1);
             result.Md.Should().Be(2m);
         }
@@ -71,40 +71,41 @@ namespace Xania.Steps.Tests.Elss
         public void Should_pack_result()
         {
             var productAgreementFunc = 
-                from a in Function.Id<Assessment>()
-                from pa in a.ProductAgreements
-                select new ProductAgreementOutput
+                from a in Function.Id<TariffProposal>()
+                from pa in a.NestedInputs
+                select new NestedOutput
                 {
                     DoubleObligo = pa.Obligo * 2
                 };
 
             var productAgreementPack = 
-                from productAgreementOutputs in Function.Query<Assessment>().Select(productAgreementFunc)
-                select new AssessmentOutput
+                from productAgreementOutputs in Function.Query<TariffProposal>().Select(productAgreementFunc)
+                select new TarifProposalOutput
                 {
                     ProductAgreements = productAgreementOutputs
                 };
 
-            var result = productAgreementPack.Execute(new Assessment
+            var result = productAgreementPack.Execute(new TariffProposal
             {
-                ProductAgreements = { new ProductAgreement { Obligo = 2 } }
+                NestedInputs = { new ProductAgreement { Obligo = 2 } }
             });
 
-            result.SelectMany(e => e.ProductAgreements).Select(e => e.DoubleObligo).Should().BeEquivalentTo(4m);
+            result.SelectMany(e => e.ProductAgreements)
+                .Select(e => e.DoubleObligo).Should().BeEquivalentTo(4m);
         }
 
-        private class Assessment
+        private class TariffProposal
         {
-            public Assessment()
+            public TariffProposal()
             {
-                ProductAgreements = new List<ProductAgreement>();
+                NestedInputs = new List<ProductAgreement>();
             }
             public decimal A { get; set; }
             public decimal B { get; set; }
             public decimal? C { get; set; }
             public decimal D { get; set; }
 
-            public ICollection<ProductAgreement> ProductAgreements { get; private set; }
+            public ICollection<ProductAgreement> NestedInputs { get; private set; }
         }
 
         class ProductAgreement
@@ -112,7 +113,7 @@ namespace Xania.Steps.Tests.Elss
             public decimal Obligo { get; set; }
         }
 
-        internal class ProductAgreementOutput
+        internal class NestedOutput
         {
             public decimal Obligo { get; set; }
             public decimal DoubleObligo { get; set; }
@@ -123,11 +124,11 @@ namespace Xania.Steps.Tests.Elss
             public decimal Fee { get; set; }
         }
 
-        internal class AssessmentOutput
+        internal class TarifProposalOutput
         {
-            public AssessmentOutput()
+            public TarifProposalOutput()
             {
-                ProductAgreements = new List<ProductAgreementOutput>();
+                ProductAgreements = new List<NestedOutput>();
             }
             public int Id { get; set; }
             public decimal A { get; set; }
@@ -139,7 +140,7 @@ namespace Xania.Steps.Tests.Elss
                 return String.Format(@"{{ A = {0}, B = {1}, Md = {2} }}", A, B, Md);
             }
 
-            public IEnumerable<ProductAgreementOutput> ProductAgreements { get; set; }
+            public IEnumerable<NestedOutput> ProductAgreements { get; set; }
         }
     }
 

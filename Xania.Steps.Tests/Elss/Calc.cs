@@ -8,6 +8,17 @@ using Xania.Steps.Core;
 
 namespace Xania.Steps.Tests.Elss
 {
+    public class Calc<TResult>
+    {
+        public Calc(string name, Expression<Func<TResult>> calcExpression)
+        {
+            this.CalcExpression = calcExpression;
+        }
+
+        public Expression<Func<TResult>> CalcExpression { get; set; }
+
+    }
+
     public class Calc<TModel, TResult>: IFunction<TModel, TResult>
     {
         public Calc(Expression<Func<TModel, TResult>> calcExpression)
@@ -43,7 +54,7 @@ namespace Xania.Steps.Tests.Elss
             return new Calc<TModel, TResult>(lambda);
         }
 
-        public static Calc<TModel, TResult> operator & (Calc<TModel, TResult> calc1, Calc<TModel, TResult> calc2)
+        public static Calc<TModel, TResult> operator &(Calc<TModel, TResult> calc1, Calc<TModel, TResult> calc2)
         {
             return calc1.CombineResult(calc2);
         }

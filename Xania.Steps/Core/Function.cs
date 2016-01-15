@@ -75,13 +75,25 @@ namespace Xania.Steps.Core
             return new Function<TModel, TResult>(name, func);
         }
 
+        public static Function<Unit, TResult> Create<TResult>(Func<TResult> func)
+        {
+            return new Function<Unit, TResult>("dummy", u => func());
+        }
+
         public static ExpressionFunction<TModel, TResult> FromExpression<TModel, TResult>(Expression<Func<TModel, TResult>> func)
         {
             return new ExpressionFunction<TModel, TResult>(String.Empty, func);
         }
     }
 
-    public class Identity<T>: IFunction<T, T>
+    public sealed class Unit
+    {
+        private Unit() { }
+
+        public static readonly Unit Any = new Unit();
+    }
+
+    public class Identity<T> : IFunction<T, T>
     {
         public T Execute(T root)
         {
