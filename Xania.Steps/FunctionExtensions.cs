@@ -44,6 +44,21 @@ namespace Xania.Steps
 
             return Expression.Lambda<Func<TInput, TResult>>(bodyExpr, paramExpr);
         }
+
+        public static Expression<Func<TResult>> FoldExpressions<TInput, TResult>(
+            this Expression<Func<TResult>> head, Func<Expression, Expression, Expression> f,
+            params Expression<Func<TResult>>[] tail)
+        {
+            return FoldExpressions(head, f, tail.AsEnumerable());
+        }
+
+        public static Expression<Func<TResult>> FoldExpressions<TResult>(this Expression<Func<TResult>> head, Func<Expression, Expression, Expression> f, IEnumerable<Expression<Func<TResult>>> tail)
+        {
+            var bodyExpr = tail.Select(right => right.Body)
+                .Aggregate(head.Body, (current, rightExpr) => f(current, rightExpr));
+
+            return Expression.Lambda<Func<TResult>>(bodyExpr);
+        }
     }
 
     public static class ParameterReplacer

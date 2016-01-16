@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,20 +9,34 @@ namespace Xania.Steps.Tests.Elss
 {
     public class Calc<TResult>
     {
-        public Calc(string name, Expression<Func<TResult>> calcExpression)
+        private Lazy<TResult> _value;
+
+        public Expression<Func<TResult>> CalcExpression { get; private set; }
+
+        public Calc(Expression<Func<TResult>> calcExpression)
         {
-            this.CalcExpression = calcExpression;
+            CalcExpression = calcExpression;
+            _value = new Lazy<TResult>(() => calcExpression.Compile().Invoke());
         }
 
-        public Expression<Func<TResult>> CalcExpression { get; set; }
+        public static implicit operator Calc<TResult>(Calc<Unit, TResult> calc)
+        {
+            return new Calc<TResult>(null);
+        }
 
+        public static Calc<TResult> operator &(Calc<TResult> calc1, Calc<TResult> calc2)
+        {
+            return calc1.SelectMany(calc2);
+        }
+
+        public TResult Value { get { return _value.Value; } }
     }
 
     public class Calc<TModel, TResult>: IFunction<TModel, TResult>
     {
         public Calc(Expression<Func<TModel, TResult>> calcExpression)
         {
-            this.CalcExpression = calcExpression;
+            CalcExpression = calcExpression;
         }
 
         public Expression<Func<TModel, TResult>> CalcExpression { get; private set; }
@@ -32,7 +45,7 @@ namespace Xania.Steps.Tests.Elss
         {
             var paramExpr = CalcExpression.Parameters[0];
             var bodyExpr = selector.Body.Replace(selector.Parameters[0], CalcExpression.Body);
-            var lambda = System.Linq.Expressions.Expression.Lambda<Func<TModel, TSelect>>(bodyExpr, paramExpr);
+            var lambda = Expression.Lambda<Func<TModel, TSelect>>(bodyExpr, paramExpr);
 
             return new Calc<TModel, TSelect>(lambda);
         }
@@ -41,37 +54,37 @@ namespace Xania.Steps.Tests.Elss
         {
             var paramExpr = CalcExpression.Parameters[0];
             var bodyExpr = selector.Body.Replace(selector.Parameters[0], CalcExpression.Body);
-            var lambda = System.Linq.Expressions.Expression.Lambda<Func<TModel, TSelect>>(bodyExpr, paramExpr);
+            var lambda = Expression.Lambda<Func<TModel, TSelect>>(bodyExpr, paramExpr);
 
             return new Calc<TModel, TSelect>(lambda);
         }
 
         public static Calc<TModel, TResult> operator +(Calc<TModel, TResult> left, TResult value)
         {
-            var body = System.Linq.Expressions.Expression.Add(left.CalcExpression.Body, System.Linq.Expressions.Expression.Constant(value));
-            var lambda = System.Linq.Expressions.Expression.Lambda<Func<TModel, TResult>>(body, left.CalcExpression.Parameters[0]);
+            var body = Expression.Add(left.CalcExpression.Body, Expression.Constant(value));
+            var lambda = Expression.Lambda<Func<TModel, TResult>>(body, left.CalcExpression.Parameters[0]);
 
             return new Calc<TModel, TResult>(lambda);
         }
 
         public static Calc<TModel, TResult> operator &(Calc<TModel, TResult> calc1, Calc<TModel, TResult> calc2)
         {
-            return calc1.CombineResult(calc2);
+            return calc1.SelectMany(calc2);
         }
 
         public static Calc<TModel, TResult> operator +(Calc<TModel, TResult> left, Calc<TModel, TResult> right)
         {
-            return left.FoldCalculations(System.Linq.Expressions.Expression.Add, right);
+            return left.FoldCalculations(Expression.Add, right);
         }
 
         public static Calc<TModel, TResult> operator -(Calc<TModel, TResult> left, Calc<TModel, TResult> right)
         {
-            return left.FoldCalculations(System.Linq.Expressions.Expression.Subtract, right);
+            return left.FoldCalculations(Expression.Subtract, right);
         }
 
         public static Calc<TModel, TResult> operator *(Calc<TModel, TResult> left, Calc<TModel, TResult> right)
         {
-            return left.FoldCalculations(System.Linq.Expressions.Expression.Multiply, right);
+            return left.FoldCalculations(Expression.Multiply, right);
         }
 
         public Calc<TModel, decimal> Set<TProperty>(Expression<Func<TModel, TProperty>> propertyExpression)
@@ -132,7 +145,7 @@ namespace Xania.Steps.Tests.Elss
                 ReportMethodInfo = typeof (BindingVisitor).GetMethods().Single(m => m.Name == "Report");
             }
 
-            private static MethodInfo ReportMethodInfo { get; set; }
+            private static readonly MethodInfo ReportMethodInfo;
 
             public static TValue Report<TValue>(IDictionary<Expression, object> values, Expression key, TValue value)
             {
@@ -147,6 +160,11 @@ namespace Xania.Steps.Tests.Elss
         public static Calc<TModel, TModel> Id<TModel>()
         {
             return new Calc<TModel, TModel>(e => e);
+        }
+
+        public static Calc<TMember> Create<TMember>(Expression<Func<TMember>> expression)
+        {
+            return new Calc<TMember>(expression);
         }
 
         public static Calc<TModel, TMember> Select<TModel, TMember>(Expression<Func<TModel, TMember>> expression)
@@ -165,20 +183,31 @@ namespace Xania.Steps.Tests.Elss
             return new Calc<TModel, TResult>(expr);
         }
 
-        public static Calc<TInput, TResult> CombineResult<TInput, TResult>(this Calc<TInput, TResult> calc1, Calc<TInput, TResult> calc2)
+        public static Calc<TResult> FoldCalculations<TResult>(this Calc<TResult> head, Func<Expression, Expression, Expression> f, params Calc<TResult>[] right)
         {
-            return calc1.FoldCalculations(CombineResult, calc2);
+            var expr = head.CalcExpression.FoldExpressions(f, right.Select(e => e.CalcExpression));
+            return new Calc<TResult>(expr);
         }
 
-        public static Calc<TInput, TResult> CombineResult<TInput, TResult>(this Calc<TInput, TResult> calc1, Calc<Unit, TResult> calc2)
+        public static Calc<TInput, TResult> SelectMany<TInput, TResult>(this Calc<TInput, TResult> calc1, Calc<TInput, TResult> calc2)
         {
-            var bodyExpr = CombineResult(calc1.CalcExpression.Body, calc2.CalcExpression.Body);
+            return calc1.FoldCalculations(CombineResults, calc2);
+        }
+
+        public static Calc<TResult> SelectMany<TResult>(this Calc<TResult> calc1, Calc<TResult> calc2)
+        {
+            return calc1.FoldCalculations(CombineResults, calc2);
+        }
+
+        public static Calc<TInput, TResult> SelectMany<TInput, TResult>(this Calc<TInput, TResult> calc1, Calc<Unit, TResult> calc2)
+        {
+            var bodyExpr = CombineResults(calc1.CalcExpression.Body, calc2.CalcExpression.Body);
             var lambdaExpr = Expression.Lambda<Func<TInput, TResult>>(bodyExpr, calc1.CalcExpression.Parameters[0]);
 
             return Select(lambdaExpr);
         }
 
-        private static Expression CombineResult(Expression expr1, Expression expr2)
+        private static Expression CombineResults(Expression expr1, Expression expr2)
         {
             var memberInit1 = expr1 as MemberInitExpression;
             if (memberInit1 == null) 

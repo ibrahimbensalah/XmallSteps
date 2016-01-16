@@ -60,7 +60,7 @@ namespace Xania.Steps.Tests.Elss
             var calcA = Calc.Constant(() => new TarifProposalOutput { A = 1 });
             var calcMd = id.Select(a => new TarifProposalOutput { Md = a.B });
 
-            var calc = calcMd.CombineResult(calcA);
+            var calc = calcMd.SelectMany(calcA);
 
             var result = calc.Execute(new TariffProposal { B = 2 });
             result.A.Should().Be(1);

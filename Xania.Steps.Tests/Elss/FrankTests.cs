@@ -10,104 +10,147 @@ namespace Xania.Steps.Tests.Elss
     public class FrankTests
     {
         [Test]
-        public void HandlingFeeTest()
+        public void GetAdvicedCreditAmountTest()
         {
-            var md = new MasterDataRepository();
+            var tariffProposalCalculator = new TariffProposalCalculator();
 
-            var creditFeePercentageFunc = Calc.Constant(() => new TariffProposalResult
-            {
-                CreditFeePercentage = md.GetCreditFee(),
-                CreditFeeOnObligoPercentage = md.GetCreditFeeOnObligo(),
-                AdvicedCreditFeePercentage = md.GetCreditFee() + md.GetCreditFeeOnObligo()
-            });
+            var result = tariffProposalCalculator.GetAdvicedCreditAmount(new ProductAgreement());
 
-            var advicedCreditFeeFunc =
-                from relation in Function.Query<CommercialRelation>()
-                from pa in relation.ProductAgreements
-                select creditFeePercentageFunc & Calc.Constant(() => new TariffProposalResult
-                {
-                    AdvicedCreditFeeAmount = pa.ObligoAmount + md.GetCreditFee() + md.GetCreditFeeOnObligo()
-                });
-
-            var result = advicedCreditFeeFunc.Execute(new CommercialRelation() {ProductAgreements = {new ProductAgreement()}}).Single().Execute(Unit.Any);
-
-            result.CreditFeeOnObligoPercentage.Should().Be(2);
-            result.CreditFeePercentage.Should().Be(1);
-            result.AdvicedCreditFeePercentage.Should().Be(3);
-            result.AdvicedCreditFeeAmount.Should().Be(3);
-
-            var q =
-                from a in (new [] { new CommercialRelation() }).AsQueryable()
-                from pa in a.ProductAgreements
-                select new TariffProposalResult
-                {
-                    AdvicedCreditFeeAmount = 123
-                };
-
-            Console.WriteLine(q.Expression);
+            result.Value.CreditFeeOnObligoPercentage.Should().Be(2);
+            result.Value.CreditFeePercentage.Should().Be(1);
+            result.Value.AdvicedCreditFeePercentage.Should().Be(3);
+            result.Value.AdvicedCreditFeeAmount.Should().Be(3);
         }
 
-        class Assessment
+        [Test]
+        public void GetBankGaranteePercentageTest()
+        {
+            var calculator = new TariffProposalCalculator();
+
+            var result = calculator.AdvicedBankGaranteeAmount(new ProductAgreement { ObligoAmount = 2 });
+
+            result.Value.BankGaranteeOnObligoPercentage.Should().Be(2);
+            result.Value.BankGaranteePercentage.Should().Be(1);
+            result.Value.AdvicedBankGaranteePercentage.Should().Be(3);
+            result.Value.AdvicedBankGaranteeAmount.Should().Be(6);
+        }
+
+        [Test]
+        public void GetTariffProposalTest()
+        {
+            var calculator = new TariffProposalCalculator();
+            var pa = new ProductAgreement {ObligoAmount = 2};
+
+            var result = calculator.AdvicedBankGaranteeAmount(pa) & calculator.GetAdvicedCreditAmount(pa);
+
+            result.Value.BankGaranteeOnObligoPercentage.Should().Be(2);
+            result.Value.CreditFeeOnObligoPercentage.Should().Be(2);
+
+            result.Value.AdvicedBankGaranteeAmount.Should().Be(6);
+            result.Value.AdvicedCreditFeeAmount.Should().Be(5);
+        }
+
+        private class Assessment
         {
             public ClientGroup ClientGroup { get; set; }
         }
-        class ClientGroup
+
+        private class ClientGroup
         {
             public IList<CommercialRelation> CommercialRelations { get; set; }
         }
 
-        class CommercialRelation
+        private class CommercialRelation
         {
             public CommercialRelation()
             {
                 ProductAgreements = new List<ProductAgreement>();
             }
+
             public IList<ProductAgreement> ProductAgreements { get; private set; }
             public PDDeterminingClient PDDeterminingClient { get; set; }
         }
 
-        class PDDeterminingClient
+        private class PDDeterminingClient
         {
             public decimal CreditObligoAmount { get; set; }
             public string ExpectedLossClass { get; set; }
         }
 
-        class ProductAgreement
+        internal class ProductAgreement
         {
-            List<TariffProposal> TariffProposals { get; set; }
+            private List<TariffProposal> TariffProposals { get; set; }
             public decimal ObligoAmount { get; set; }
+            public decimal BankGaranteeCostsCorrectionAmount { get; set; }
         }
 
-        class TariffProposal
+        private class TariffProposal
         {
             public ProductAgreement ProductAgreement { get; set; }
         }
 
-        class TariffProposalResult
+        internal class TariffProposalResult
         {
             public decimal CreditFeePercentage { get; set; }
             public decimal CreditFeeOnObligoPercentage { get; set; }
             public decimal AdvicedCreditFeePercentage { get; set; }
-            public decimal AdvicedCreditFeeAmount { get; set; }
+            public decimal? AdvicedCreditFeeAmount { get; set; }
             public ProductAgreement PA { get; set; }
-        }
-    }
-
-    public class MasterDataRepository
-    {
-        public decimal GetCreditFeePercentage(decimal creditObligoAmount, string expectedLossClass)
-        {
-            return creditObligoAmount;
+            public decimal BankGaranteePercentage { get; set; }
+            public decimal BankGaranteeOnObligoPercentage { get; set; }
+            public decimal AdvicedBankGaranteePercentage { get; set; }
+            public decimal AdvicedBankGaranteeAmount { get; set; }
         }
 
-        public decimal GetCreditFee()
-        {
-            return 1;
-        }
 
-        public decimal GetCreditFeeOnObligo()
+        public class TariffProposalCalculator
         {
-            return 2;
+            public decimal GetCreditFeePercentage(decimal creditObligoAmount, string expectedLossClass)
+            {
+                return creditObligoAmount;
+            }
+
+            public decimal CreditFee()
+            {
+                return 1;
+            }
+
+            public decimal CreditFeeOnObligo()
+            {
+                return 2;
+            }
+
+            private decimal AdvicedCreditFeePercentage()
+            {
+                return CreditFee() + CreditFeeOnObligo();
+            }
+
+            internal Calc<TariffProposalResult> GetAdvicedCreditAmount(ProductAgreement pa)
+            {
+                return Calc.Create(() => new TariffProposalResult
+                {
+                    CreditFeePercentage = CreditFee(),
+                    CreditFeeOnObligoPercentage = CreditFeeOnObligo(),
+                    AdvicedCreditFeePercentage = AdvicedCreditFeePercentage(),
+                    AdvicedCreditFeeAmount = IncludeAdvicedCreditFeeAmount() ? pa.ObligoAmount + AdvicedCreditFeePercentage() : (decimal?)null
+                });
+            }
+
+            internal Calc<TariffProposalResult> AdvicedBankGaranteeAmount(ProductAgreement pa)
+            {
+                return Calc.Create(() => new TariffProposalResult
+                {
+                    BankGaranteePercentage = CreditFee(),
+                    BankGaranteeOnObligoPercentage = CreditFeeOnObligo(),
+                    AdvicedBankGaranteePercentage = AdvicedCreditFeePercentage(),
+                    AdvicedBankGaranteeAmount = AdvicedCreditFeePercentage() * pa.ObligoAmount - pa.BankGaranteeCostsCorrectionAmount
+                });
+            }
+
+            public bool IncludeAdvicedCreditFeeAmount()
+            {
+                return true;
+            }
         }
     }
 }
