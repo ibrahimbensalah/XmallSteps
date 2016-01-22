@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xania.Calculation.Designer"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xania.Calculation.Designer.Tests", "Xania.Calculation.Designer.Tests\Xania.Calculation.Designer.Tests.csproj", "{AA88E60F-7F12-4FC3-843B-CABE3637F66D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Xania.Calculation.Engine", "Xania.Calculation.Engine\Xania.Calculation.Engine.fsproj", "{639A7405-B1F8-4108-9A34-342D397791EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AA88E60F-7F12-4FC3-843B-CABE3637F66D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA88E60F-7F12-4FC3-843B-CABE3637F66D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA88E60F-7F12-4FC3-843B-CABE3637F66D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{639A7405-B1F8-4108-9A34-342D397791EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{639A7405-B1F8-4108-9A34-342D397791EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{639A7405-B1F8-4108-9A34-342D397791EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{639A7405-B1F8-4108-9A34-342D397791EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
