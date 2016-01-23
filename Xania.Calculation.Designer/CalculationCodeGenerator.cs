@@ -22,7 +22,7 @@ namespace Xania.Calculation.Designer
             if (string.IsNullOrEmpty(b.Path))
                 return string.Format("Branch (\"{0}\", {1})", b.Name, GenerateCode(b.Tree));;
 
-            if (b.IsList)
+            // if (b.IsList)
                 return string.Format("BranchMany (\"{0}\", map {1} {2})", b.Name, b.Path, GenerateCode(b.Tree)); ;
         }
 

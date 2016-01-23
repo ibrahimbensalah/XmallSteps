@@ -1,25 +1,18 @@
 ﻿// Learn more about F# at http://fsharp.net. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 
-#load "Library1.fs"
-open Xania.Calculation.Engine
+// #load "Library1.fs"
+// open Xania.Calculation.Engine
 
 // Define your library scripting code here
 
-
 type 'a Branch =
     | Branch of string * 'a
-    // | BranchMany of string * 'a list
-
-//type Tree = 
-//    | Node of Branch<Tree> list
-//    | Amount of decimal
-//    | Number of int
-//    | Text of string
 
 type 'a Tree = 
     | Node of 'a Tree Branch list
-    | List of 'a Tree list
+    | List of ('a -> 'a Tree list)
+    | List2 of 'a Tree list
     | Amount of ('a -> decimal)
     | Perc of ('a -> float)
     | Number of ('a -> int)
@@ -31,6 +24,7 @@ let mapBranch (f:'a -> 'b) b =
     // | BranchMany(s, a) -> BranchMany(s, List.map f a)
 
 let mapList = List.map
+let toString x = x.ToString()
 
 let rec mapTree (f:'a -> 'b) tree = 
     let mapBranches = mapList << mapBranch << mapTree
@@ -41,19 +35,24 @@ let rec mapTree (f:'a -> 'b) tree =
     | Perc a -> Perc (f >> a)
     | Number a -> Number (f >> a)
     | Node branches -> Node ( mapBranches f branches )
-    | List trees -> List ( mapTrees f trees )
+    | List2 trees -> 
+        List2 ( mapTrees f trees )
+    | List a -> 
+        List (f >> a >> mapList (mapTree f))
 
-let mapTrees f = mapList (fun g -> mapTree (f g))
+let bindTree (tree:'a Tree) x:'a = mapTree (fun _ -> x) tree
+let bindTrees tree = List.map (bindTree tree)
+// let bindTree tree = List.map (fun x -> mapTree (fun _ -> x) tree)
+let mapTrees g tree = g >> List.map (bindTree tree) 
 
-let toString x = x.ToString()
 let add x y  = x + y
 let add4 y = 4 + y
 let duplicate (x:float) = x * 2.
 
-type Person = { FirstName : string ; LastName : string; Age: int; Grades: int list; }
+type Person = { FirstName : string ; Age: int; Grades: int list; }
 
 let personAge p = p.Age
-let personGrades (p:Person) = p.Grades
+let personGrades p = p.Grades
 
 let yellowTree = Text toString
 
@@ -72,12 +71,20 @@ let brownTree =
         Branch ("leaf 4", Number add4) 
     ]
 
-let pers f p =  mapTrees f brownTree]
+let holaTree f l = List.map l f
+
+// let mapTrees : f:('a -> 'b list) -> tree:'b Tree -> 'c = f
+
+// let mapBrown f = mapTrees2 f [brownTree]
 
 let mainTree = 
     Node [ 
         Branch ("blue", blueTree) 
-        Branch ("brown", List ( (mapList << personGrades ) mapTree brownTree))
+        Branch ("brown", 
+            // let f = List. brownTree
+            List ( mapTrees personGrades brownTree ) )
+        Branch ("brown2", 
+            List ( personGrades >> bindTrees brownTree ) )
     ]
 
 let rec execute a tree =
@@ -86,11 +93,9 @@ let rec execute a tree =
     | Amount f -> f a |> toString
     | Perc f -> f a |> toString
     | Number f -> f a |> toString
-    | List l -> mapList (execute a) l |> toString
-    | Node (Branch(n, st)::tail) -> n + "=" + (execute a st) + ";" + (execute a (Node tail))
+    | List2 l -> mapList (execute a) l |> toString
+    | List l -> mapList (execute a) (l a) |> toString
+    | Node (Branch(n, st)::tail) -> "[" + n + "]=" + (execute a st) + ";" + (execute a (Node tail))
     | Node [] -> ""
 
-[<EntryPoint>]
-let main argv = 
-    printfn "%A" argv
-    0 // return an integer exit code
+let ibrahim = { FirstName = "ibrahim" ; Age = 35 ; Grades = [9 ; 8 ; 10] }
