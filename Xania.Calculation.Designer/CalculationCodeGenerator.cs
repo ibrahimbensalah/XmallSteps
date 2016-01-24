@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Xania.Calculation.Designer
 {
@@ -7,23 +8,25 @@ namespace Xania.Calculation.Designer
     {
         public string GenerateCode(LeafComponent leaf)
         {
-            return string.Format("{0} (fun input -> {1})", leaf.Type, leaf.Expression);
+            if (Regex.IsMatch(leaf.Fun, "^[_a-z][_a-z0-9]+$", RegexOptions.IgnoreCase))
+                return string.Format("{0} {1}", leaf.Type, leaf.Fun);
+            return string.Format("{0} (fun value -> {1})", leaf.Type, leaf.Fun);
         }
 
         public string GenerateCode(NodeComponent node)
         {
-            return "Node ([ " + string.Join(" ; ", 
-                node.Branches.Select(Format)) + " ])";
+            return "Node ([ " + string.Join(" ; ",
+                node.Branches.Select(GenerateCode)) + " ])";
             // return string.Format("Node ([ Branch (\"branch\", {0}) ])");
         }
 
-        private string Format(BranchComponent b)
+        public string GenerateCode(BranchComponent b)
         {
             if (string.IsNullOrEmpty(b.Path))
                 return string.Format("Branch (\"{0}\", {1})", b.Name, GenerateCode(b.Tree));;
 
-            // if (b.IsList)
-                return string.Format("BranchMany (\"{0}\", map {1} {2})", b.Name, b.Path, GenerateCode(b.Tree)); ;
+            return string.Format("Branch (\"{0}\", {1} {2} {3} )", b.Name, 
+                b.Many ? "mapTrees": "mapTree", b.Path, GenerateCode(b.Tree)); ;
         }
 
         private string GenerateCode(ITreeComponent tree)
@@ -32,8 +35,15 @@ namespace Xania.Calculation.Designer
                 return GenerateCode(tree as LeafComponent);
             if (tree is NodeComponent)
                 return GenerateCode(tree as NodeComponent);
+            if (tree is TreeRefComponent)
+                return GenerateCode(tree as TreeRefComponent);
 
             throw new NotSupportedException("type is not supported " + tree.GetType());
+        }
+
+        private string GenerateCode(TreeRefComponent treeRefComponent)
+        {
+            return treeRefComponent.Name;
         }
     }
 }

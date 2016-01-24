@@ -7,12 +7,13 @@ namespace Xania.Calculation.Designer
             Type = LeafType.Amount;
         }
 
-        public string Expression { get; set; }
+        public string Fun { get; set; }
         public LeafType Type { get; set; }
     }
 
     public enum LeafType
     {
-        Amount
+        Amount,
+        Number
     }
 }

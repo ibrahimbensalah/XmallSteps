@@ -11,4 +11,9 @@ namespace Xania.Calculation.Designer
 
         public virtual IList<BranchComponent> Branches { get; private set; }
     }
+
+    public class TreeRefComponent : ITreeComponent
+    {
+        public string Name { get; set; }
+    }
 }

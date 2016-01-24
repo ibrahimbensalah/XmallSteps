@@ -26,6 +26,7 @@ let mapList = List.map
 let toString x = x.ToString()
 
 let toText x = x |> Text
+let toConst x = x :> obj |> Const
 
 let rec mapTree (f:'a -> 'b) tree = 
     let mapBranches = mapList << mapBranch << mapTree
@@ -76,11 +77,11 @@ let lookupFun db y = 1
 // let toObject x = x :> obj
 let yellowTree = Text toString
 
-let masterdata name = "MD(" + name + ")" :> obj |> Const
+let masterdata name = "MD(" + name + ")"
 
 let simpleNode = 
     Node [
-        Branch ("branch 1", masterdata "CreditFee" )
+        Branch ("branch 1", masterdata "CreditFee" |> toConst )
     ]
 
 let blueTree = 
