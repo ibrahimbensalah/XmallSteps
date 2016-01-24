@@ -10,18 +10,17 @@ type 'a Branch =
     | Branch of string * 'a
 
 type 'a Tree = 
-    | Node of 'a Tree Branch list
-    | List of ('a -> 'a Tree list)
-    | List2 of 'a Tree list
+    | Leaf of ('a -> obj)
+    | Text of ('a -> string)
     | Amount of ('a -> decimal)
     | Perc of ('a -> float)
     | Number of ('a -> int)
-    | Text of ('a -> string)
+    | Node of 'a Tree Branch list
+    | List of ('a -> 'a Tree list)
 
 let mapBranch (f:'a -> 'b) b =
     match b with
-    | Branch(s, a) -> Branch(s, f a)
-    // | BranchMany(s, a) -> BranchMany(s, List.map f a)
+    | Branch(s, t) -> Branch(s, f t)
 
 let mapList = List.map
 let toString x = x.ToString()
@@ -30,20 +29,33 @@ let rec mapTree (f:'a -> 'b) tree =
     let mapBranches = mapList << mapBranch << mapTree
     let mapTrees = mapList << mapTree
     match tree with
+    | Leaf a -> Leaf (f >> a)
     | Text a -> Text (f >> a)
     | Amount a -> Amount (f >> a)
     | Perc a -> Perc (f >> a)
     | Number a -> Number (f >> a)
     | Node branches -> Node ( mapBranches f branches )
-    | List2 trees -> 
-        List2 ( mapTrees f trees )
-    | List a -> 
-        List (f >> a >> mapList (mapTree f))
+    | List a -> List (f >> a >> mapList (mapTree f))
 
-let bindTree (tree:'a Tree) x:'a = mapTree (fun _ -> x) tree
+let bindTree tree x = mapTree (fun _ -> x) tree
 let bindTrees tree = List.map (bindTree tree)
-// let bindTree tree = List.map (fun x -> mapTree (fun _ -> x) tree)
-let mapTrees g tree = g >> List.map (bindTree tree) 
+let treeList path tree = List ( path >> bindTrees tree )
+let rec treeToJson tree input =
+    let subTreeToJson subtree = treeToJson subtree input
+    match tree with
+    | Leaf f -> f input |> toString
+    | Text f -> f input |> toString
+    | Amount f -> f input |> toString
+    | Perc f -> f input |> toString
+    | Number f -> f input |> toString
+    | Node branches -> 
+        let executeBranche (Branch(n, st)) = "'" + n + "':" + (subTreeToJson st)
+        "{ " + (mapList executeBranche branches |> String.concat ", ") + " }"
+    | List l -> 
+        "[ " + (mapList subTreeToJson (l input) |> String.concat ", ") + " ]"
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
 
 let add x y  = x + y
 let add4 y = 4 + y
@@ -59,10 +71,9 @@ let yellowTree = Text toString
 let blueTree = 
     Node [ 
         // Branch ("leaf 1", add 1m >> yellowTree); 
-        Branch ("leaf 1", toString |> Text ) 
         Branch ("leaf 2", personAge >> add4 |> Number ) 
         Branch ("leaf 3", (fun p -> p.Age) >> add4 |> Number ) 
-        Branch ("node 2", mapTree personAge yellowTree )
+        Branch ("yellow", mapTree personAge yellowTree ) 
     ]
 
 let brownTree = 
@@ -71,31 +82,12 @@ let brownTree =
         Branch ("leaf 4", Number add4) 
     ]
 
-let holaTree f l = List.map l f
-
-// let mapTrees : f:('a -> 'b list) -> tree:'b Tree -> 'c = f
-
-// let mapBrown f = mapTrees2 f [brownTree]
-
 let mainTree = 
     Node [ 
         Branch ("blue", blueTree) 
-        Branch ("brown", 
-            // let f = List. brownTree
-            List ( mapTrees personGrades brownTree ) )
-        Branch ("brown2", 
-            List ( personGrades >> bindTrees brownTree ) )
+        Branch ("brown", treeList personGrades brownTree )
     ]
 
-let rec execute a tree =
-    match tree with
-    | Text f -> f a |> toString
-    | Amount f -> f a |> toString
-    | Perc f -> f a |> toString
-    | Number f -> f a |> toString
-    | List2 l -> mapList (execute a) l |> toString
-    | List l -> mapList (execute a) (l a) |> toString
-    | Node (Branch(n, st)::tail) -> "[" + n + "]=" + (execute a st) + ";" + (execute a (Node tail))
-    | Node [] -> ""
-
 let ibrahim = { FirstName = "ibrahim" ; Age = 35 ; Grades = [9 ; 8 ; 10] }
+
+let eval = Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.EvaluateQuotation

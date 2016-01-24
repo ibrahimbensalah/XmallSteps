@@ -37,8 +37,7 @@ namespace Xania.Calculation.Designer.Tests
             {
                 Branches =
                 {
-                    new BranchComponent {IsList = false, Name = "branch1", Tree = new LeafComponent {Expression = "1m"}},
-                    new BranchComponent {IsList = true, Path = "path1", Name = "branch2", Tree = new LeafComponent {Expression = "3m"}}
+                    new BranchComponent {Name = "branch1", Tree = new LeafComponent {Expression = "input+1m"}},
                 }
             };
 
@@ -46,7 +45,7 @@ namespace Xania.Calculation.Designer.Tests
             var code = _generator.GenerateCode(node);
 
             // assert
-            code.Should().Be("Node ([ Branch (\"branch1\", Amount (fun input -> 1m)) ; Branch (\"branch2\", map (path1) (Amount (fun input -> 3m))) ])");
+            code.Should().Be("Node ([ Branch (\"branch1\", Amount (fun input -> input+1m)) ; Branch (\"branch2\", map (path1) (Amount (fun input -> 3m))) ])");
         }
     }
 }
