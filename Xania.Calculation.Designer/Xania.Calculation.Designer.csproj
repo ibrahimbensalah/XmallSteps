@@ -44,21 +44,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BranchComponent.cs" />
-    <Compile Include="CalculationCodeGenerator.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Components\BranchComponent.cs" />
+    <Compile Include="Code\CalculationCodeGenerator.cs" />
+    <Compile Include="Controls\DesignerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\DesignerControl.Designer.cs">
+      <DependentUpon>DesignerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ToolBoxControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolBoxControl.Designer.cs">
+      <DependentUpon>ToolBoxControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCalculationEngine.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="FormCalculationEngine.Designer.cs">
+      <DependentUpon>FormCalculationEngine.cs</DependentUpon>
     </Compile>
-    <Compile Include="ITreeComponent.cs" />
-    <Compile Include="LeafComponent.cs" />
-    <Compile Include="NodeComponent.cs" />
+    <Compile Include="Components\ITreeComponent.cs" />
+    <Compile Include="Components\LeafComponent.cs" />
+    <Compile Include="Components\NodeComponent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\DesignerControl.resx">
+      <DependentUpon>DesignerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ToolBoxControl.resx">
+      <DependentUpon>ToolBoxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCalculationEngine.resx">
+      <DependentUpon>FormCalculationEngine.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -82,6 +100,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Xania.Calculation.Designer.Components;
 
-namespace Xania.Calculation.Designer
+namespace Xania.Calculation.Designer.Code
 {
     public class CalculationCodeGenerator
     {

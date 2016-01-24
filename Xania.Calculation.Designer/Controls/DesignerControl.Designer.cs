@@ -1,13 +1,13 @@
-﻿namespace Xania.Calculation.Designer
+﻿namespace Xania.Calculation.Designer.Controls
 {
-    partial class Form1
+    partial class DesignerControl
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
+        /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -20,23 +20,26 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
             this.SuspendLayout();
             // 
-            // Form1
+            // DesignerControl
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1167, 545);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.BackColor = System.Drawing.Color.White;
+            this.Name = "DesignerControl";
+            this.Size = new System.Drawing.Size(663, 566);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DesignerControl_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.DesignerControl_DragEnter);
             this.ResumeLayout(false);
 
         }
@@ -44,4 +47,3 @@
         #endregion
     }
 }
-

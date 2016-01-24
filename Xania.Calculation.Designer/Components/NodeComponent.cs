@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-namespace Xania.Calculation.Designer
+namespace Xania.Calculation.Designer.Components
 {
-    public class NodeComponent : ITreeComponent
+    public class NodeComponent : TreeComponent
     {
         public NodeComponent()
         {
@@ -12,7 +12,7 @@ namespace Xania.Calculation.Designer
         public virtual IList<BranchComponent> Branches { get; private set; }
     }
 
-    public class TreeRefComponent : ITreeComponent
+    public class TreeRefComponent : TreeComponent
     {
         public string Name { get; set; }
     }
