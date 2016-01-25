@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace Xania.Calculation.Designer.Components
 {
@@ -19,7 +20,12 @@ namespace Xania.Calculation.Designer.Components
 
         public override string ToString()
         {
-            return Fun;
+            if (string.IsNullOrEmpty(Fun))
+                return string.Empty;
+
+            if (Regex.IsMatch(Fun, "^[_a-z][_a-z0-9]+$", RegexOptions.IgnoreCase))
+                return string.Format("{0} {1}", Type, Fun);
+            return string.Format("{0} (fun value -> {1})", Type, Fun);
         }
     }
 

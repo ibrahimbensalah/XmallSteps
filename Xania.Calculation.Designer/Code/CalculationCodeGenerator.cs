@@ -9,9 +9,7 @@ namespace Xania.Calculation.Designer.Code
     {
         public string GenerateCode(LeafComponent leaf)
         {
-            if (Regex.IsMatch(leaf.Fun, "^[_a-z][_a-z0-9]+$", RegexOptions.IgnoreCase))
-                return string.Format("{0} {1}", leaf.Type, leaf.Fun);
-            return string.Format("{0} (fun value -> {1})", leaf.Type, leaf.Fun);
+            return leaf.ToString();
         }
 
         public string GenerateCode(NodeComponent node)
