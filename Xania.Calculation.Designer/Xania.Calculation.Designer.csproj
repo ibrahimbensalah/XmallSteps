@@ -52,6 +52,8 @@
     <Compile Include="Controls\DesignerControl.Designer.cs">
       <DependentUpon>DesignerControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DesignerDragDropManager.cs" />
+    <Compile Include="Controls\DesignerTransitionManager.cs" />
     <Compile Include="Controls\ToolBoxControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

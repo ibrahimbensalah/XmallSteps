@@ -16,6 +16,7 @@ namespace Xania.Calculation.Designer.Controls
         private DesignerSelectionManager _selectionManager;
         private ITreeComponent[] _selectedItems;
         private DesignerDragDropManager _dragDropManager;
+        private DesignerTransitionManager _transitionManager;
 
         public ITreeComponent[] SelectedItems
         {
@@ -42,6 +43,7 @@ namespace Xania.Calculation.Designer.Controls
 
             _selectionManager = new DesignerSelectionManager(this);
             _dragDropManager = new DesignerDragDropManager(this);
+            _transitionManager = new DesignerTransitionManager(this);
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
