@@ -41,7 +41,7 @@ namespace Xania.Calculation.Designer.Controls
     {
         public static void Attach(UserControl userControl)
         {
-            userControl.MouseD
+            // userControl.MouseD
         }
     }
 }
