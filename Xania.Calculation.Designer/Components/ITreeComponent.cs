@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Security.Cryptography.X509Certificates;
 
@@ -7,27 +9,40 @@ namespace Xania.Calculation.Designer.Components
     {
         string InputType { get; }
 
-        int X { get; set; }
-        int Y { get; set; }
-        int W { get; }
-        int H { get; }
+        ComponentLayout Layout { get; }
+    }
 
-        Color BackColor { get; }
+    public class ComponentLayout
+    {
+        [Browsable(false)]
+        public int X { get; set; }
+        [Browsable(false)]
+        public int Y { get; set; }
+        [Browsable(false)]
+        public RectangleF Bounds { get; set; }
+
+        public Color BackColor { get; set; }
     }
 
     public static class TreeComponentExtensions
     {
-        public static Rectangle GetBounds(this ITreeComponent treeComponent)
+        public static RectangleF GetBounds(this ITreeComponent treeComponent, Graphics g, Font font)
         {
-            var x = treeComponent.X - treeComponent.W / 2;
-            var y = treeComponent.Y - treeComponent.H / 2;
-            return new Rectangle(x, y, treeComponent.W, treeComponent.H);
+            var text = treeComponent.ToString();
+            var textSizeF = g.MeasureString(text, font);
+
+            var w = Math.Max(40, textSizeF.Width + 10);
+            var h = Math.Max(20, textSizeF.Height + 10);
+            var x = treeComponent.Layout.X - w / 2;
+            var y = treeComponent.Layout.Y - h / 2;
+
+            return treeComponent.Layout.Bounds = new RectangleF(x, y, w, h);
         }
 
         public static ITreeComponent MoveTo(this ITreeComponent treeComponent, Point pos)
         {
-            treeComponent.X = pos.X;
-            treeComponent.Y = pos.Y;
+            treeComponent.Layout.X = pos.X;
+            treeComponent.Layout.Y = pos.Y;
 
             return treeComponent;
         }

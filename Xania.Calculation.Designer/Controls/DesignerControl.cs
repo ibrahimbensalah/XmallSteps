@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -17,10 +18,11 @@ namespace Xania.Calculation.Designer.Controls
         private ITreeComponent[] _selectedItems;
         private DesignerDragDropManager _dragDropManager;
         private DesignerTransitionManager _transitionManager;
+        private readonly IList<Action<Graphics>> _drawActions = new List<Action<Graphics>>();
 
         public ITreeComponent[] SelectedItems
         {
-            get { return _selectedItems; }
+            get { return _selectedItems ?? new ITreeComponent[0]; }
             set
             {
                 if (value != _selectedItems)
@@ -53,38 +55,51 @@ namespace Xania.Calculation.Designer.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            lock (_drawActions)
+            {
+                foreach (var a in _drawActions.ToArray())
+                {
+                    a(e.Graphics);
+                }
+                _drawActions.Clear();
+            }
+
             foreach (var cmp in _treeComponents)
             {
                 var text = cmp.ToString();
-                var textSizeF = e.Graphics.MeasureString(text, Font);
+                var bounds = cmp.GetBounds(e.Graphics, Font);
 
-                DrawStringBounds(cmp, e.Graphics, textSizeF);
-                DrawString(cmp, e.Graphics, textSizeF, text);
+                DrawStringBounds(cmp, e.Graphics, bounds);
+                DrawString(cmp, e.Graphics, text);
             }
 
             base.OnPaint(e);
         }
 
-        private void DrawStringBounds(ITreeComponent cmp, Graphics g, SizeF textSizeF)
+        private void DrawStringBounds(ITreeComponent cmp, Graphics g, RectangleF bounds)
         {
-            var textWidth = Math.Max(40, textSizeF.Width + 10);
-            var textHeight = Math.Max(20, textSizeF.Height + 10);
-            var textBoundsX = cmp.X - textWidth/2;
-            var textBoundsY = cmp.Y - textHeight/2;
-            g.FillRectangle(new SolidBrush(cmp.BackColor), textBoundsX, textBoundsY, textWidth, textHeight);
-            g.DrawRectangle(Pens.Black, textBoundsX, textBoundsY, textWidth, textHeight);
+            //var textWidth = textSizeF.Width;
+            //var textHeight = textSizeF.Height;
+
+            //var textBoundsX = cmp.X - textSizeF.Width/2;
+            //var textBoundsY = cmp.Y - textSizeF.Height/2;
+
+            g.FillRectangle(new SolidBrush(cmp.Layout.BackColor), bounds);
+            g.DrawRectangle(Pens.Black, bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
             if (SelectedItems.Contains(cmp))
             {
-                g.DrawRectangle(new Pen(Color.Green) { DashStyle = DashStyle.Dash }, 
-                    textBoundsX - 3, textBoundsY - 3, textWidth + 6, textHeight + 6);
+                g.DrawRectangle(new Pen(Color.Green) {DashStyle = DashStyle.Dash},
+                    bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6);
+                    // textBoundsX - 3, textBoundsY - 3, textWidth + 6, textHeight + 6);
             }
         }
 
-        private void DrawString(ITreeComponent cmp, Graphics g, SizeF textSizeF, string text)
+        private void DrawString(ITreeComponent cmp, Graphics g, string text)
         {
-            var textLocationX = cmp.X - textSizeF.Width/2;
-            var textLocationY = cmp.Y - textSizeF.Height / 2;
+            var textSizeF = g.MeasureString(text, Font);
+            var textLocationX = cmp.Layout.X - textSizeF.Width / 2;
+            var textLocationY = cmp.Layout.Y - textSizeF.Height / 2;
             g.DrawString(text, Font, Brushes.Black, textLocationX, textLocationY);
         }
 
@@ -100,6 +115,15 @@ namespace Xania.Calculation.Designer.Controls
         {
             var handler = SelectionChanged;
             if (handler != null) handler(this, SelectedItems);
+        }
+
+        public void Invalidate(Action<Graphics> action)
+        {
+            lock (_drawActions)
+            {
+                _drawActions.Add(action);
+                Invalidate();
+            }
         }
     }
 }

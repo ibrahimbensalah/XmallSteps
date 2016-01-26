@@ -35,8 +35,8 @@ namespace Xania.Calculation.Designer.Controls
                         dragSelection.Location = target;
                         foreach (var cmp in _userControl.SelectedItems)
                         {
-                            cmp.X -= dx;
-                            cmp.Y -= dy;
+                            cmp.Layout.X -= dx;
+                            cmp.Layout.Y -= dy;
                         }
                         _userControl.Invalidate();
                     }

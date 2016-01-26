@@ -33,27 +33,13 @@ namespace Xania.Calculation.Designer.Components
     {
         protected TreeComponent()
         {
-            W = 50;
-            H = 50;
+            Layout = new ComponentLayout();
         }
 
         [Category("Functional"), DisplayName(@"Input type")]
         public string InputType { get; set; }
 
-        [Browsable(false)]
-        public int X { get; set; }
-        [Browsable(false)]
-        public int Y { get; set; }
-        [Browsable(false)]
-        public int W { get; set; }
-        [Browsable(false)]
-        public int H { get; set; }
-
-        [Category("Layout")]
-        public Color BackColor { get; set; }
-
-        [Category("Layout")]
-        public Color ForeColor { get; set; }
+        public ComponentLayout Layout { get; private set; }
 
         public override string ToString()
         {
