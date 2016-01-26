@@ -58,7 +58,7 @@
     <Compile Include="Controls\ToolBoxControl.Designer.cs">
       <DependentUpon>ToolBoxControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TreeBranchesManager.cs" />
+    <Compile Include="Controls\DesignerSelectionManager.cs" />
     <Compile Include="FormCalculationEngine.cs">
       <SubType>Form</SubType>
     </Compile>

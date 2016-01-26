@@ -24,33 +24,19 @@ namespace Xania.Calculation.Designer.Controls
             {
                 var listViewItem = e.Item as ListViewItem;
 
-                var item = CreateTreeComponent(listViewItem.Text);
-                if (item != null)
-                    DoDragDrop(new DragItem(item), DragDropEffects.Copy);
-            }
-        }
-
-        private ITreeComponent CreateTreeComponent(string text)
-        {
-            switch (text)
-            {
-                case "Leaf":
-                    return new LeafComponent { };
-                case "Node":
-                    return new NodeComponent { };
-                default:
-                    return null;
+                if (!string.IsNullOrEmpty(listViewItem.Text))
+                    DoDragDrop(new DragItem(listViewItem.Text), DragDropEffects.Copy);
             }
         }
     }
 
     internal class DragItem
     {
-        public ITreeComponent Tree { get; private set; }
+        public string Type { get; private set; }
 
-        public DragItem(ITreeComponent tree)
+        public DragItem(string type)
         {
-            Tree = tree;
+            Type = type;
         }
     }
 }
