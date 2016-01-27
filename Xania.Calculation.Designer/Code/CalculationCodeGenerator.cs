@@ -15,11 +15,11 @@ namespace Xania.Calculation.Designer.Code
         public string GenerateCode(NodeComponent node)
         {
             return "Node ([ " + string.Join(" ; ",
-                node.Branches.Select(GenerateCode)) + " ])";
+                node.Arguments.Select(GenerateCode)) + " ])";
             // return string.Format("Node ([ Branch (\"branch\", {0}) ])");
         }
 
-        public string GenerateCode(BranchComponent b)
+        public string GenerateCode(TreeArgument b)
         {
             if (string.IsNullOrEmpty(b.Path))
                 return string.Format("Branch (\"{0}\", {1})", b.Name, GenerateCode(b.Tree));;

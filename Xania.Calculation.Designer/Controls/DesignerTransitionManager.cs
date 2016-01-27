@@ -32,7 +32,7 @@ namespace Xania.Calculation.Designer.Controls
         {
             if (eventArgs.Data.GetDataPresent(typeof(DragBranch)))
             {
-                var dragBranch = (DragBranch) eventArgs.Data.GetData(typeof (DragBranch));
+                var dragBranch = (DragBranch)eventArgs.Data.GetData(typeof(DragBranch));
                 var toLocation = _designerControl.PointToClient(new Point(eventArgs.X, eventArgs.Y));
                 _designerControl.DoPaint(g =>
                 {
@@ -48,22 +48,20 @@ namespace Xania.Calculation.Designer.Controls
 
         void _designerControl_DragDrop(object sender, DragEventArgs eventArgs)
         {
-            if (eventArgs.Data.GetDataPresent(typeof (DragBranch)))
+            if (eventArgs.Data.GetDataPresent(typeof(DragBranch)))
             {
-                var dragBranch = (DragBranch) eventArgs.Data.GetData(typeof (DragBranch));
+                var dragBranch = (DragBranch)eventArgs.Data.GetData(typeof(DragBranch));
                 var endLocation = _designerControl.PointToClient(new Point(eventArgs.X, eventArgs.Y));
 
                 var fromComponent = _designerControl.FindComponents(dragBranch.FromLocation).FirstOrDefault();
-                var endComponent = _designerControl.FindComponents(endLocation).OfType<NodeComponent>().FirstOrDefault();
+                var endComponent = _designerControl.FindComponents(endLocation).FirstOrDefault();
 
-                if (endComponent != null && fromComponent != null && fromComponent != endComponent)
+                if (fromComponent != null && fromComponent != endComponent)
                 {
-                    endComponent.Branches.Add(new BranchComponent {Name = "branch", Tree = fromComponent});
+                    endComponent.Connect(fromComponent);
+                    _designerControl.Invalidate();
                 }
-
-                _designerControl.Invalidate();
             }
-            // var dragBranch = e.Data.GetData(typeof (DragBranch));
         }
 
         private void _designerControl_DragEnter(object sender, DragEventArgs e)

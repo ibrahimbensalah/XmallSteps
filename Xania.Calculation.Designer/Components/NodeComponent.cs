@@ -3,25 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace Xania.Calculation.Designer.Components
 {
     public class NodeComponent : TreeComponent
     {
-        public NodeComponent()
+        public override bool Connect(ITreeComponent fromComponent)
         {
-            Branches = new ExpandableDesignerCollection<BranchComponent>();
-        }
+            if (Arguments.Any(arg => arg.Tree == fromComponent))
+                return false;
 
-        [Category("Functional")]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public virtual ExpandableDesignerCollection<BranchComponent> Branches { get; private set; }
+            Arguments.Add(new TreeArgument { Name = "branch", Tree = fromComponent });
+            return true;
+        }
     }
 
     public class TreeRefComponent : TreeComponent
     {
         public string Name { get; set; }
+        public override bool Connect(ITreeComponent fromComponent)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class ExpandableDesignerCollection<T> : Collection<T>, ICustomTypeDescriptor

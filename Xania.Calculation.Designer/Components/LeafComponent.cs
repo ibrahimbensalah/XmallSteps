@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Xania.Calculation.Designer.Components
@@ -13,10 +13,18 @@ namespace Xania.Calculation.Designer.Components
 
         [Category("Functional"), DisplayName(@"Function")]
         public string Fun { get; set; }
-
         [Category("Functional")]
         [DisplayName(@"Leaf type")]
         public LeafType Type { get; set; }
+
+        public override bool Connect(ITreeComponent fromComponent)
+        {
+            if (!(fromComponent is LeafComponent) || Arguments.Any(arg => arg.Tree == fromComponent))
+                return false;
+
+            Arguments.Add(new TreeArgument { Name = "arg0", Tree = fromComponent });
+            return true;
+        }
 
         public override string ToString()
         {
@@ -34,10 +42,17 @@ namespace Xania.Calculation.Designer.Components
         protected TreeComponent()
         {
             Layout = new ComponentLayout();
+            Arguments = new ExpandableDesignerCollection<TreeArgument>();
         }
 
         [Category("Functional"), DisplayName(@"Input type")]
         public string InputType { get; set; }
+
+        [Category("Functional")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public virtual ExpandableDesignerCollection<TreeArgument> Arguments { get; private set; }
+
+        public abstract bool Connect(ITreeComponent fromComponent);
 
         [Category("Designer")]
         [TypeConverter(typeof(ComponentConverter))]

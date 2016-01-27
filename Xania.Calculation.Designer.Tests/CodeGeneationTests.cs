@@ -40,10 +40,10 @@ namespace Xania.Calculation.Designer.Tests
         {
             var node = new NodeComponent
             {
-                Branches =
+                Arguments =
                 {
-                    new BranchComponent {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
-                    new BranchComponent {Name = "b2", Tree = new LeafComponent {Fun = "score"}},
+                    new TreeArgument {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
+                    new TreeArgument {Name = "b2", Tree = new LeafComponent {Fun = "score"}},
                 }
             };
 
@@ -60,7 +60,7 @@ namespace Xania.Calculation.Designer.Tests
         {
             // arrange
             var subTree = new TreeRefComponent { Name = "subtree" };
-            var branch = new BranchComponent {Name = "b1", Many = many, Path = path, Tree = subTree};
+            var branch = new TreeArgument {Name = "b1", Many = many, Path = path, Tree = subTree};
 
             // act
             var code = _generator.GenerateCode(branch);

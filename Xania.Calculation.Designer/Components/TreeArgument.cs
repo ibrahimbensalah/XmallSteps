@@ -3,7 +3,7 @@
 namespace Xania.Calculation.Designer.Components
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class BranchComponent
+    public class TreeArgument
     {
         public string Name { get; set; }
 

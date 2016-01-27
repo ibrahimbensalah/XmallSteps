@@ -9,13 +9,15 @@ namespace Xania.Calculation.Designer.Components
         string InputType { get; }
 
         ComponentLayout Layout { get; }
+        ExpandableDesignerCollection<TreeArgument> Arguments { get; }
+        bool Connect(ITreeComponent fromComponent);
     }
 
     public class ComponentLayout
     {
         public ComponentLayout()
         {
-            BackColor = Color.White;
+           BackColor = Color.White;
         }
         [Browsable(false)]
         public int X { get; set; }
