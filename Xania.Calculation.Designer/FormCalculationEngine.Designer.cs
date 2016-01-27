@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.toolBoxControl1 = new Xania.Calculation.Designer.Controls.ToolBoxControl();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.designerControl1 = new Xania.Calculation.Designer.Controls.DesignerControl();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -47,6 +47,7 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -56,14 +57,25 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1167, 545);
-            this.splitContainer1.SplitterDistance = 261;
+            this.splitContainer1.Size = new System.Drawing.Size(875, 443);
+            this.splitContainer1.SplitterDistance = 195;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // toolBoxControl1
+            // 
+            this.toolBoxControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolBoxControl1.Location = new System.Drawing.Point(0, 0);
+            this.toolBoxControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.toolBoxControl1.Name = "toolBoxControl1";
+            this.toolBoxControl1.Size = new System.Drawing.Size(195, 443);
+            this.toolBoxControl1.TabIndex = 0;
             // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -73,26 +85,10 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer2.Size = new System.Drawing.Size(902, 545);
-            this.splitContainer2.SplitterDistance = 511;
+            this.splitContainer2.Size = new System.Drawing.Size(677, 443);
+            this.splitContainer2.SplitterDistance = 383;
+            this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 1;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(387, 545);
-            this.propertyGrid1.TabIndex = 0;
-            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            // 
-            // toolBoxControl1
-            // 
-            this.toolBoxControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolBoxControl1.Location = new System.Drawing.Point(0, 0);
-            this.toolBoxControl1.Name = "toolBoxControl1";
-            this.toolBoxControl1.Size = new System.Drawing.Size(261, 545);
-            this.toolBoxControl1.TabIndex = 0;
             // 
             // designerControl1
             // 
@@ -100,16 +96,30 @@
             this.designerControl1.BackColor = System.Drawing.Color.White;
             this.designerControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.designerControl1.Location = new System.Drawing.Point(0, 0);
+            this.designerControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.designerControl1.Name = "designerControl1";
-            this.designerControl1.Size = new System.Drawing.Size(511, 545);
+            this.designerControl1.SelectedItems = new Xania.Calculation.Designer.Components.ITreeComponent[0];
+            this.designerControl1.Size = new System.Drawing.Size(383, 443);
             this.designerControl1.TabIndex = 0;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(291, 443);
+            this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             // 
             // FormCalculationEngine
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1167, 545);
+            this.ClientSize = new System.Drawing.Size(875, 443);
             this.Controls.Add(this.splitContainer1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormCalculationEngine";
             this.Text = "Calculation Engine";
             this.Load += new System.EventHandler(this.FormCalculationEngine_Load);

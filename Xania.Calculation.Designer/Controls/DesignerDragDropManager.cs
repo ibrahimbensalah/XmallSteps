@@ -68,10 +68,10 @@ namespace Xania.Calculation.Designer.Controls
                 switch (dragItem.Type.ToLower())
                 {
                     case "leaf":
-                        _userControl.Add(new LeafComponent { }, pos);
+                        _userControl.Add(new LeafComponent { Fun = "value" }, pos);
                         break;
                     case "node":
-                        _userControl.Add(new NodeComponent { }, pos);
+                        _userControl.Add(new NodeComponent { InputType = "MyObject" }, pos);
                         break;
                 }
             }

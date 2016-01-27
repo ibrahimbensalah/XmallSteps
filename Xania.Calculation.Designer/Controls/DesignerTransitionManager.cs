@@ -1,66 +1,68 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using Xania.Calculation.Designer.Components;
 
 namespace Xania.Calculation.Designer.Controls
 {
     public class DesignerTransitionManager
     {
         private readonly DesignerControl _designerControl;
-        private Point? _startPos;
-        private Point? _endPos;
 
         public DesignerTransitionManager(DesignerControl designerControl)
         {
             _designerControl = designerControl;
 
             _designerControl.MouseDown += _designerControl_MouseDown;
-            _designerControl.MouseUp += _designerControl_MouseUp;
-            _designerControl.Paint += _designerControl_Paint;
             _designerControl.DragEnter += _designerControl_DragEnter;
             _designerControl.DragOver += _designerControl_DragOver;
             _designerControl.DragDrop += _designerControl_DragDrop;
-        }
-
-        void _designerControl_MouseUp(object sender, MouseEventArgs e)
-        {
-            _startPos = null;
-            _endPos = null;
         }
 
         void _designerControl_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && Control.ModifierKeys == Keys.Alt)
             {
-                _designerControl.DoDragDrop(new DragBranch(e.Location), DragDropEffects.Link);
+                var dragBranch = new DragBranch(e.Location);
+                _designerControl.DoDragDrop(dragBranch, DragDropEffects.Link);
             }
         }
 
-        void _designerControl_DragOver(object sender, DragEventArgs e)
+        void _designerControl_DragOver(object sender, DragEventArgs eventArgs)
         {
-            if (e.Data.GetDataPresent(typeof(DragBranch)))
+            if (eventArgs.Data.GetDataPresent(typeof(DragBranch)))
             {
-                _endPos = _designerControl.PointToClient(new Point(e.X, e.Y));
-                if (_startPos == null)
-                    _startPos = _endPos;
-                else
-                    _designerControl.Invalidate();
+                var dragBranch = (DragBranch) eventArgs.Data.GetData(typeof (DragBranch));
+                var toLocation = _designerControl.PointToClient(new Point(eventArgs.X, eventArgs.Y));
+                _designerControl.DoPaint(g =>
+                {
+                    var fromComponent =
+                         _designerControl.FindComponents(dragBranch.FromLocation)
+                             .FirstOrDefault();
+
+                    if (fromComponent != null)
+                        g.DrawLine(Pens.Gray, fromComponent.Layout.X, fromComponent.Layout.Y, toLocation.X, toLocation.Y);
+                });
             }
         }
 
-        void _designerControl_Paint(object sender, PaintEventArgs e)
+        void _designerControl_DragDrop(object sender, DragEventArgs eventArgs)
         {
-            if (_startPos != null && _endPos != null)
+            if (eventArgs.Data.GetDataPresent(typeof (DragBranch)))
             {
-                e.Graphics.DrawLine(Pens.Gray, _startPos.Value, _endPos.Value);
-            }
-        }
+                var dragBranch = (DragBranch) eventArgs.Data.GetData(typeof (DragBranch));
+                var endLocation = _designerControl.PointToClient(new Point(eventArgs.X, eventArgs.Y));
 
-        void _designerControl_DragDrop(object sender, DragEventArgs e)
-        {
-            _endPos = null;
-            _startPos = null;
-            _designerControl.Invalidate();
+                var fromComponent = _designerControl.FindComponents(dragBranch.FromLocation).FirstOrDefault();
+                var endComponent = _designerControl.FindComponents(endLocation).OfType<NodeComponent>().FirstOrDefault();
+
+                if (endComponent != null && fromComponent != null && fromComponent != endComponent)
+                {
+                    endComponent.Branches.Add(new BranchComponent {Name = "branch", Tree = fromComponent});
+                }
+
+                _designerControl.Invalidate();
+            }
             // var dragBranch = e.Data.GetData(typeof (DragBranch));
         }
 
@@ -72,11 +74,11 @@ namespace Xania.Calculation.Designer.Controls
 
         class DragBranch
         {
-            private readonly Point _startPoint;
+            public Point FromLocation { get; private set; }
 
-            public DragBranch(Point startPoint)
+            public DragBranch(Point fromLocation)
             {
-                _startPoint = startPoint;
+                FromLocation = fromLocation;
             }
         }
     }

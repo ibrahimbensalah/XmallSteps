@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Xania.Calculation.Designer.Components
 {
@@ -14,6 +13,10 @@ namespace Xania.Calculation.Designer.Components
 
     public class ComponentLayout
     {
+        public ComponentLayout()
+        {
+            BackColor = Color.White;
+        }
         [Browsable(false)]
         public int X { get; set; }
         [Browsable(false)]

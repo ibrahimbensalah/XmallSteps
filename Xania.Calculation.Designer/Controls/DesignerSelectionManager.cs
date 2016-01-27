@@ -21,7 +21,7 @@ namespace Xania.Calculation.Designer.Controls
             if (Control.MouseButtons == MouseButtons.Left && 
                 (Control.ModifierKeys == Keys.Control || Control.ModifierKeys == Keys.None))
             {
-                _userControl.Invalidate(g =>
+                _userControl.DoPaint(g =>
                 {
                     var q = from cmp in _userControl.Items
                             // let pos = e.Location

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -55,6 +54,8 @@ namespace Xania.Calculation.Designer.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
             lock (_drawActions)
             {
                 foreach (var a in _drawActions.ToArray())
@@ -66,24 +67,43 @@ namespace Xania.Calculation.Designer.Controls
 
             foreach (var cmp in _treeComponents)
             {
+                DrawBranches(cmp, e.Graphics);
+            }
+
+            foreach (var cmp in _treeComponents)
+            {
                 var text = cmp.ToString();
                 var bounds = cmp.GetBounds(e.Graphics, Font);
 
                 DrawStringBounds(cmp, e.Graphics, bounds);
-                DrawString(cmp, e.Graphics, text);
+                DrawString(e.Graphics, text, cmp.Layout.X, cmp.Layout.Y);
             }
 
             base.OnPaint(e);
         }
 
+        private void DrawBranches(ITreeComponent cmp, Graphics g)
+        {
+            var node = cmp as NodeComponent;
+            if (node != null)
+            {
+                foreach (var b in node.Branches)
+                {
+                    var pen = SelectedItems.Contains(b.Tree) || SelectedItems.Contains(node) ? Pens.Gainsboro : Pens.Black;
+                    g.DrawLine(pen, node.Layout.X, node.Layout.Y, b.Tree.Layout.X, b.Tree.Layout.Y);
+                    
+                    {
+                        var x = (node.Layout.X + b.Tree.Layout.X) / 2;
+                        var y = (node.Layout.Y + b.Tree.Layout.Y) / 2;
+                        DrawString(g, b.Name, x, y);
+                        // g.DrawString(b.Name + " => " + b.Path, Font, Brushes.Gray, x, y);
+                    }
+                }
+            }
+        }
+
         private void DrawStringBounds(ITreeComponent cmp, Graphics g, RectangleF bounds)
         {
-            //var textWidth = textSizeF.Width;
-            //var textHeight = textSizeF.Height;
-
-            //var textBoundsX = cmp.X - textSizeF.Width/2;
-            //var textBoundsY = cmp.Y - textSizeF.Height/2;
-
             g.FillRectangle(new SolidBrush(cmp.Layout.BackColor), bounds);
             g.DrawRectangle(Pens.Black, bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
@@ -91,15 +111,14 @@ namespace Xania.Calculation.Designer.Controls
             {
                 g.DrawRectangle(new Pen(Color.Green) {DashStyle = DashStyle.Dash},
                     bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6);
-                    // textBoundsX - 3, textBoundsY - 3, textWidth + 6, textHeight + 6);
             }
         }
 
-        private void DrawString(ITreeComponent cmp, Graphics g, string text)
+        private void DrawString(Graphics g, string text, int x, int y)
         {
             var textSizeF = g.MeasureString(text, Font);
-            var textLocationX = cmp.Layout.X - textSizeF.Width / 2;
-            var textLocationY = cmp.Layout.Y - textSizeF.Height / 2;
+            var textLocationX = x - textSizeF.Width / 2;
+            var textLocationY = y - textSizeF.Height / 2;
             g.DrawString(text, Font, Brushes.Black, textLocationX, textLocationY);
         }
 
@@ -117,13 +136,18 @@ namespace Xania.Calculation.Designer.Controls
             if (handler != null) handler(this, SelectedItems);
         }
 
-        public void Invalidate(Action<Graphics> action)
+        public void DoPaint(Action<Graphics> action)
         {
             lock (_drawActions)
             {
                 _drawActions.Add(action);
                 Invalidate();
             }
+        }
+
+        public IEnumerable<ITreeComponent> FindComponents(Point point)
+        {
+            return Items.Where(i => i.Layout.Bounds.Contains(point));
         }
     }
 }

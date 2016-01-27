@@ -1,11 +1,15 @@
-﻿namespace Xania.Calculation.Designer.Components
+﻿using System.ComponentModel;
+
+namespace Xania.Calculation.Designer.Components
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class BranchComponent
     {
         public string Name { get; set; }
 
         public bool Many { get; set; }
 
+        [Browsable(false)]
         public ITreeComponent Tree { get; set; }
         
         public string Path { get; set; }

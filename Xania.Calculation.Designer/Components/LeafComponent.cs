@@ -39,6 +39,8 @@ namespace Xania.Calculation.Designer.Components
         [Category("Functional"), DisplayName(@"Input type")]
         public string InputType { get; set; }
 
+        [Category("Designer")]
+        [TypeConverter(typeof(ComponentConverter))]
         public ComponentLayout Layout { get; private set; }
 
         public override string ToString()
