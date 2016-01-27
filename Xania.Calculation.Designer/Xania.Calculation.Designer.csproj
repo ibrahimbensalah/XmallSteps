@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Controls\DesignerDragDropManager.cs" />
     <Compile Include="Controls\DesignerTransitionManager.cs" />
+    <Compile Include="Controls\GraphicsExtensions.cs" />
     <Compile Include="Controls\Images.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

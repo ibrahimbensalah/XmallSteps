@@ -1,26 +1,18 @@
 ﻿{
-    "simple": {
-        "branch 1": "MD(CreditFee)"
-    },
-    "blue": {
-        "leaf 2": "39",
-        "yellow": "35"
-    },
-    "brown list": [
+    "leaf 2": "39",
+    "yellow": "35",
+    "grades": [
         {
-            "leaf 3": "9",
-            "leaf 4": "13",
-            "leaf *2": "18"
+            "branch 1": "MD(CreditFee)",
+            "branch 1": "9"
         },
         {
-            "leaf 3": "8",
-            "leaf 4": "12",
-            "leaf *2": "16"
+            "branch 1": "MD(CreditFee)",
+            "branch 1": "8"
         },
         {
-            "leaf 3": "10",
-            "leaf 4": "14",
-            "leaf *2": "20"
+            "branch 1": "MD(CreditFee)",
+            "branch 1": "10"
         }
     ]
 }

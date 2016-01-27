@@ -75,7 +75,9 @@ namespace Xania.Calculation.Designer.Controls
                 var text = cmp.ToString();
                 var bounds = cmp.GetBounds(e.Graphics, Font);
 
-                DrawStringBounds(e.Graphics, cmp.Layout.BackColor, SelectedItems.Contains(cmp), bounds);
+                var radius = cmp is LeafComponent ? 10f : 0f;
+
+                DrawStringBounds(e.Graphics, cmp.Layout.BackColor, SelectedItems.Contains(cmp), bounds, radius);
                 DrawString(e.Graphics, Color.Black, text, cmp.Layout.X, cmp.Layout.Y);
             }
 
@@ -109,7 +111,7 @@ namespace Xania.Calculation.Designer.Controls
             {
                 g.TranslateTransform(-pos.X, -pos.Y);
                 var rad = (float) Math.Atan((bY - aY)/(bX - aX));
-                var deg = rad*180/Math.PI;
+                var deg = rad * 180 / Math.PI + (bX - aX < 0 ? 180 : 0);
                 g.RotateTransform((float) deg, MatrixOrder.Append);
                 g.TranslateTransform(pos.X, pos.Y, MatrixOrder.Append);
                 g.DrawImage(Images.arrow_pointer, x, y);
@@ -133,10 +135,10 @@ namespace Xania.Calculation.Designer.Controls
             return new Point((int)(aX + dX), (int)(aY + dY));
         }
 
-        private void DrawStringBounds(Graphics g, Color backColor, bool selected, RectangleF bounds)
+        private void DrawStringBounds(Graphics g, Color backColor, bool selected, RectangleF bounds, float radius)
         {
-            g.FillRectangle(new SolidBrush(backColor), bounds);
-            g.DrawRectangle(Pens.Black, bounds.X, bounds.Y, bounds.Width, bounds.Height);
+            g.FillRoundRectangle(new SolidBrush(backColor), bounds.X, bounds.Y, bounds.Width, bounds.Height, radius);
+            g.DrawRoundRectangle(Pens.Black, bounds.X, bounds.Y, bounds.Width, bounds.Height, radius);
 
             if (selected)
             {
