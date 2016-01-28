@@ -9,11 +9,6 @@
 type 'a Branch =
     | Branch of string * 'a
 
-type Result =
-    | Obj of obj
-    | Array of Result list
-    | Tuple of string * obj
-
 type 'a Tree = 
     | Text of ('a -> string)
     | Amount of ('a -> decimal)
@@ -46,23 +41,7 @@ let rec mapTree (f:'a -> 'b) tree =
     | List a -> List (f >> a >> mapList (mapTree f))
 
 let bindTree tree x = mapTree (fun _ -> x) tree
-let rec bindTree2 tree x =
-    let bindSubTree tree = bindTree2 tree x
-    match tree with
-    | Const o -> Obj o
-    | Text f -> Obj (f x)
-    | Amount f -> Obj (f x)
-    | Perc f -> Obj (f x)
-    | Number f -> Obj (f x)
-    | Node branches -> 
-        let bindBranch b =
-            match b with
-            | Branch(s, t) -> Tuple (s, bindSubTree t)
-        branches |> mapList bindBranch |> Array
-    | List f -> Array ( List.map bindSubTree (f x) )
-
-let bindTrees tree = bindTree tree |> List.map
-let bindTrees2 tree = bindTree2 tree |> List.map
+let bindTrees tree = List.map (bindTree tree)
 let mapTrees path tree = List ( path >> bindTrees tree )
 let rec treeToJson tree input =
     let subTreeToJson subtree = treeToJson subtree input
@@ -98,7 +77,6 @@ let lookupFun db y = 1
 // let toObject x = x :> obj
 let yellowTree = Text toString
 
-
 let masterdata name = "MD(" + name + ")"
 
 let simpleNode = 
@@ -128,6 +106,5 @@ let mainTree =
     ]
 
 let ibrahim = { FirstName = "ibrahim" ; Age = 35 ; Grades = [9 ; 8 ; 10] }
-let ttt = bindTree2 yellowTree ibrahim
 
 
