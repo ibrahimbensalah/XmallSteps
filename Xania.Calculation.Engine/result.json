@@ -8,19 +8,19 @@
     },
     "brown list": [
         {
-            "leaf 3": "9",
-            "leaf *2": 36,
-            "leaf 4": 13
+            "leaf toString": "9",
+            "leaf +4": 13,
+            "failure": "Failure: some message"
         },
         {
-            "leaf 3": "8",
-            "leaf *2": 32,
-            "leaf 4": 12
+            "leaf toString": "8",
+            "leaf +4": 12,
+            "failure": "Failure: some message"
         },
         {
-            "leaf 3": "10",
-            "leaf *2": 40,
-            "leaf 4": 14
+            "leaf toString": "10",
+            "leaf +4": 14,
+            "failure": "Failure: some message"
         }
     ]
 }

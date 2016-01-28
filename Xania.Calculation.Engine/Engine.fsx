@@ -12,40 +12,38 @@ type Result =
     | Text of string
     | Array of Result list
     | Object of (string * Result) list
+    | Failure of string
 
 type 'a Tree = 
     | Const of Result
     | Leaf of ('a -> Result)
     | Node of ( string * 'a Tree ) list
 
-let mapBranch (f:'a -> 'b) b =
-    match b with
-    | (s, t) -> (s, f t)
+let mapTuple f (s, t) = (s, f t)
 
 let toString x = x.ToString() |> Text
 
 let rec mapTree (f:'a -> 'b) tree = 
-    let mapBranches = List.map << mapBranch << mapTree
+    let mapTuples = List.map << mapTuple << mapTree
     match tree with
     | Const c -> Const c
     | Leaf a -> Leaf (f >> a)
-    | Node branches -> Node ( mapBranches f branches )
+    | Node tuples -> Node ( mapTuples f tuples )
 
 let rec applyTree tree x =
     let applySubTree tree = applyTree tree x
     match tree with
     | Const c -> c
     | Leaf f -> f x
-    | Node branches -> 
-        let bindBranch b =
-            match b with
-            | (s, t) -> (s, applySubTree t)
-        branches |> List.map bindBranch |> Object
+    | Node tuples -> 
+        let bindTuple = mapTuple applySubTree
+        tuples |> List.map bindTuple |> Object
 
 let rec resultToJson result =
     let tupleToJson (n, v) = "\"" + n + "\" : " + (resultToJson v) + ""
     match result with
         | Text c -> "\"" + c + "\""
+        | Failure message -> "\"Failure: " + message + "\""
         | Number n -> n.ToString()
         | Amount a -> a.ToString()
         | Array arr -> "[ " + (String.concat ", " (List.map resultToJson arr)) + " ]"
@@ -98,9 +96,9 @@ let blueTree =
 
 let brownTree = 
     Node [ 
-        ("leaf 3", Leaf toString)
-        ("leaf *2", Leaf ((*) 4 >> Number))
-        ("leaf 4", Leaf ((+) 4 >> Number))
+        ("leaf toString", Leaf toString)
+        ("leaf +4", Leaf ((+) 4 >> Number))
+        ("failure", Failure "some message" |> Const )
     ]
 
 let mainTree = 
