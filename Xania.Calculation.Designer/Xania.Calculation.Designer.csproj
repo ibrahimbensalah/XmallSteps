@@ -55,6 +55,12 @@
     </Compile>
     <Compile Include="Controls\DesignerDragDropManager.cs" />
     <Compile Include="Controls\DesignerTransitionManager.cs" />
+    <Compile Include="Controls\FormCodeViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FormCodeViewer.Designer.cs">
+      <DependentUpon>FormCodeViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GraphicsExtensions.cs" />
     <Compile Include="Controls\Images.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -81,6 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\DesignerControl.resx">
       <DependentUpon>DesignerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FormCodeViewer.resx">
+      <DependentUpon>FormCodeViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Images.resx">
       <Generator>ResXFileCodeGenerator</Generator>

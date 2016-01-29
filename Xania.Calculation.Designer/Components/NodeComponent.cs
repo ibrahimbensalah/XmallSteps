@@ -10,6 +10,8 @@ namespace Xania.Calculation.Designer.Components
 {
     public class NodeComponent : TreeComponent
     {
+        public string Name { get; set; }
+
         public override bool Connect(ITreeComponent fromComponent)
         {
             if (Arguments.Any(arg => arg.Tree == fromComponent))
@@ -17,6 +19,11 @@ namespace Xania.Calculation.Designer.Components
 
             Arguments.Add(new TreeArgument { Name = "branch", Tree = fromComponent });
             return true;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{{ {0} }}", Name);
         }
     }
 

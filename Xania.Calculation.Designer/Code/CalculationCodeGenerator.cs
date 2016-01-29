@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Xania.Calculation.Designer.Components;
 
 namespace Xania.Calculation.Designer.Code
@@ -9,12 +10,17 @@ namespace Xania.Calculation.Designer.Code
     {
         public string GenerateCode(LeafComponent leaf)
         {
-            return leaf.ToString();
+            if (leaf.IsIdentityCall)
+                return "Id";
+            if (leaf.IsFunctionCall)
+                return string.Format("Leaf {0}", leaf.Fun);
+
+            return string.Format("Leaf (fun input -> {0})", leaf.Fun);
         }
 
         public string GenerateCode(NodeComponent node)
         {
-            return "Node ([ " + string.Join(" ; ",
+            return "let "+ node.Name + " input = Node ([ " + string.Join(" ; ",
                 node.Arguments.Select(GenerateCode)) + " ])";
             // return string.Format("Node ([ Branch (\"branch\", {0}) ])");
         }
@@ -22,13 +28,13 @@ namespace Xania.Calculation.Designer.Code
         public string GenerateCode(TreeArgument b)
         {
             if (string.IsNullOrEmpty(b.Path))
-                return string.Format("Branch (\"{0}\", {1})", b.Name, GenerateCode(b.Tree));;
+                return string.Format("(\"{0}\", {1})", b.Name, GenerateCode(b.Tree));;
 
-            return string.Format("Branch (\"{0}\", {1} {2} {3} )", b.Name, 
+            return string.Format("(\"{0}\", {1} {2} {3} )", b.Name, 
                 b.Many ? "mapTrees": "mapTree", b.Path, GenerateCode(b.Tree)); ;
         }
 
-        private string GenerateCode(ITreeComponent tree)
+        public string GenerateCode(ITreeComponent tree)
         {
             if (tree is LeafComponent)
                 return GenerateCode(tree as LeafComponent);

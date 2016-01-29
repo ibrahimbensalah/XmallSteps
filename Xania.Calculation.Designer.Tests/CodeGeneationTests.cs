@@ -10,21 +10,20 @@ namespace Xania.Calculation.Designer.Tests
         private CalculationCodeGenerator _generator;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             _generator = new CalculationCodeGenerator();
         }
 
-        [TestCase(LeafType.Amount, "2 * value", "Amount (fun value -> 2 * value)")]
-        [TestCase(LeafType.Amount, "totalAmount", "Amount totalAmount")]
-        [TestCase(LeafType.Amount, "_fun", "Amount _fun")]
-        [TestCase(LeafType.Amount, "_fun2", "Amount _fun2")]
+        [TestCase(LeafType.Amount, "2 * input", "Leaf (fun input -> 2 * input)")]
+        [TestCase(LeafType.Amount, "totalAmount", "Leaf totalAmount")]
+        [TestCase(LeafType.Amount, "_fun", "Leaf _fun")]
+        [TestCase(LeafType.Amount, "_fun2", "Leaf _fun2")]
         public void LeafTest(LeafType leafType, string fun, string expected)
         {
             // arrange
             var leaf = new LeafComponent
             {
-                Type = leafType,
                 Fun = fun
             };
 
@@ -40,6 +39,7 @@ namespace Xania.Calculation.Designer.Tests
         {
             var node = new NodeComponent
             {
+                Name = "getResponse",
                 Arguments =
                 {
                     new TreeArgument {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
@@ -51,11 +51,11 @@ namespace Xania.Calculation.Designer.Tests
             var code = _generator.GenerateCode(node);
 
             // assert
-            code.Should().Be("Node ([ Branch (\"b1\", Amount totalAmount) ; Branch (\"b2\", Amount score) ])");
+            code.Should().Be("let getResponse input = Node ([ (\"b1\", Leaf totalAmount) ; (\"b2\", Leaf score) ])");
         }
 
-        [TestCase(false, "personAge", "Branch (\"b1\", mapTree personAge subtree )")]
-        [TestCase(true, "personGrades", "Branch (\"b1\", mapTrees personGrades subtree )")]
+        [TestCase(false, "personAge", "(\"b1\", mapTree personAge subtree )")]
+        [TestCase(true, "personGrades", "(\"b1\", mapTrees personGrades subtree )")]
         public void SubTreeTest(bool many, string path, string expected)
         {
             // arrange
