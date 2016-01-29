@@ -160,7 +160,7 @@ namespace Xania.Calculation.Designer.Controls
                     path.AddEllipse( baseRect ); 
                 }
             } 
-            catch(Exception ex)
+            catch(Exception)
             {
                 path.AddEllipse( baseRect ); 
             } 

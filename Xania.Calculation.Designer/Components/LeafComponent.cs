@@ -15,7 +15,8 @@ namespace Xania.Calculation.Designer.Components
             if (!(fromComponent is LeafComponent) || Arguments.Any(arg => arg.Tree == fromComponent))
                 return false;
 
-            Arguments.Add(new TreeArgument { Name = "arg0", Tree = fromComponent });
+            var name = DesignerHelper.GetNewVariableName("arg{0}", Arguments.Select(a => a.Name));
+            Arguments.Add(new TreeArgument { Name = name, Tree = fromComponent });
             return true;
         }
 

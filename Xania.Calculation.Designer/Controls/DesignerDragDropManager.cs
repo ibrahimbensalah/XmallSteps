@@ -71,7 +71,10 @@ namespace Xania.Calculation.Designer.Controls
                         _userControl.Add(new LeafComponent { Fun = "input" }, pos);
                         break;
                     case "node":
-                        _userControl.Add(new NodeComponent { InputType = "MyObject" }, pos);
+                        _userControl.Add(new NodeComponent {  }, pos);
+                        break;
+                    case "connect":
+                        _userControl.Add(new ConnectComponent { }, pos);
                         break;
                 }
             }
@@ -84,6 +87,25 @@ namespace Xania.Calculation.Designer.Controls
             public DragSelection(Point location)
             {
                 Location = location;
+            }
+        }
+    }
+
+    public class DesignerShortcutManager
+    {
+        private readonly DesignerControl _userControl;
+
+        public DesignerShortcutManager(DesignerControl userControl)
+        {
+            _userControl = userControl;
+            _userControl.KeyDown += _userControl_KeyDown;
+        }
+
+        void _userControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                _userControl.Delete();
             }
         }
     }

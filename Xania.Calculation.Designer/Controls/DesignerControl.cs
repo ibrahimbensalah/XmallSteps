@@ -18,6 +18,7 @@ namespace Xania.Calculation.Designer.Controls
         private DesignerDragDropManager _dragDropManager;
         private DesignerTransitionManager _transitionManager;
         private readonly IList<Action<Graphics>> _drawActions = new List<Action<Graphics>>();
+        private DesignerShortcutManager _shortcutManager;
 
         public ITreeComponent[] SelectedItems
         {
@@ -45,6 +46,7 @@ namespace Xania.Calculation.Designer.Controls
             _selectionManager = new DesignerSelectionManager(this);
             _dragDropManager = new DesignerDragDropManager(this);
             _transitionManager = new DesignerTransitionManager(this);
+            _shortcutManager = new DesignerShortcutManager(this);
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -183,6 +185,27 @@ namespace Xania.Calculation.Designer.Controls
         public IEnumerable<ITreeComponent> FindComponents(Point point)
         {
             return Items.Where(i => i.Layout.Bounds.Contains(point));
+        }
+
+        public void Delete()
+        {
+            foreach (var s in SelectedItems)
+            {
+                foreach (var cmp in _treeComponents)
+                {
+                    foreach (var b in cmp.Arguments.ToArray())
+                    {
+                        if (b.Tree == s)
+                        {
+                            cmp.Arguments.Remove(b);
+                        }
+                    }
+                }
+                _treeComponents.Remove(s);
+            }
+
+
+            SelectedItems = new ITreeComponent[0];
         }
     }
 }

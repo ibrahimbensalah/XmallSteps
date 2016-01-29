@@ -16,14 +16,45 @@ namespace Xania.Calculation.Designer.Components
         {
             if (Arguments.Any(arg => arg.Tree == fromComponent))
                 return false;
+            var name = DesignerHelper.GetNewVariableName("prop{0}", Arguments.Select(a => a.Name));
 
-            Arguments.Add(new TreeArgument { Name = "branch", Tree = fromComponent });
+            Arguments.Add(new TreeArgument { Name = name, Tree = fromComponent });
             return true;
         }
 
         public override string ToString()
         {
             return string.Format("{{ {0} }}", Name);
+        }
+    }
+
+    public class ConnectComponent : NodeComponent
+    {
+        public override string ToString()
+        {
+            return string.Format(">>=");
+        }
+
+        public override bool Connect(ITreeComponent fromComponent)
+        {
+            if (fromComponent is NodeComponent)
+                return base.Connect(fromComponent);
+
+            return false;
+        }
+    }
+
+    public class DesignerHelper
+    {
+        public static string GetNewVariableName(string format, IEnumerable<string> existingNames)
+        {
+            var enumerable = existingNames as string[] ?? existingNames.ToArray();
+            for (int i = 0; ; i++)
+            {
+                var n = string.Format(format, i);
+                if (!enumerable.Contains(n))
+                    return n;
+            }
         }
     }
 
