@@ -34,6 +34,7 @@ namespace Xania.Calculation.Designer.Controls
         }
 
         public IEnumerable<ITreeComponent> Items { get { return _treeComponents; } }
+        public IEnumerable<NodeComponent> Nodes { get { return _treeComponents.OfType<NodeComponent>(); } }
 
         public event EventHandler<ITreeComponent[]> SelectionChanged;
         public DesignerControl()
@@ -69,94 +70,10 @@ namespace Xania.Calculation.Designer.Controls
 
             foreach (var cmp in _treeComponents)
             {
-                DrawBranches(cmp, e.Graphics);
-            }
-
-            foreach (var cmp in _treeComponents)
-            {
-                var text = cmp.ToString();
-                var bounds = cmp.GetBounds(e.Graphics, Font);
-
-                var radius = cmp is LeafComponent ? 10f : 0f;
-
-                DrawStringBounds(e.Graphics, cmp.Layout.BackColor, SelectedItems.Contains(cmp), bounds, radius);
-                DrawString(e.Graphics, Color.Black, text, cmp.Layout.X, cmp.Layout.Y);
+                cmp.Paint(e.Graphics, Font, n => SelectedItems.Contains(n));
             }
 
             base.OnPaint(e);
-        }
-
-        private void DrawBranches(ITreeComponent node, Graphics g)
-        {
-            foreach (var b in node.Arguments)
-            {
-                var color = SelectedItems.Contains(b.Tree) || SelectedItems.Contains(node)
-                    ? Color.Black
-                    : Color.Gainsboro;
-                g.DrawLine(new Pen(color), node.Layout.X, node.Layout.Y, b.Tree.Layout.X, b.Tree.Layout.Y);
-                var x = (node.Layout.X + b.Tree.Layout.X)/2;
-                var y = (node.Layout.Y + b.Tree.Layout.Y)/2;
-
-                DrawPointer(g, b.Tree.Layout.X, b.Tree.Layout.Y, node.Layout.X, node.Layout.Y);
-                DrawString(g, color, b.Name, x, y);
-            }
-        }
-
-        private void DrawPointer(Graphics g, double aX, double aY, double bX, double bY)
-        {
-            var pos = GetPointerPosition(aX, aY, bX, bY);
-
-            var x = pos.X - Images.arrow_pointer.Width / 2 + 1;
-            var y = pos.Y - Images.arrow_pointer.Height / 2 + 1;
-
-            if (Math.Abs(bX - aX) > 0)
-            {
-                g.TranslateTransform(-pos.X, -pos.Y);
-                var rad = (float) Math.Atan((bY - aY)/(bX - aX));
-                var deg = rad * 180 / Math.PI + (bX - aX < 0 ? 180 : 0);
-                g.RotateTransform((float) deg, MatrixOrder.Append);
-                g.TranslateTransform(pos.X, pos.Y, MatrixOrder.Append);
-                g.DrawImage(Images.arrow_pointer, x, y);
-                g.ResetTransform();
-            }
-            else
-            {
-                g.DrawImage(Images.arrow_pointer, x, y);
-            }
-        }
-
-        private static Point GetPointerPosition(double aX, double aY, double bX, double bY)
-        {
-            double dX = bX - aX;
-            double dY = bY - aY;
-            var dZ = Math.Sqrt(dX*dX + dY*dY);
-            var f = (dZ - 30)/dZ;
-            dX *= f;
-            dY *= f;
-
-            return new Point((int)(aX + dX), (int)(aY + dY));
-        }
-
-        private void DrawStringBounds(Graphics g, Color backColor, bool selected, RectangleF bounds, float radius)
-        {
-            g.FillRoundRectangle(new SolidBrush(backColor), bounds.X, bounds.Y, bounds.Width, bounds.Height, radius);
-            g.DrawRoundRectangle(Pens.Black, bounds.X, bounds.Y, bounds.Width, bounds.Height, radius);
-
-            if (selected)
-            {
-                g.DrawRectangle(new Pen(Color.Green) { DashStyle = DashStyle.Dash },
-                    bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6);
-            }
-        }
-
-        private void DrawString(Graphics g, Color color, string text, int x, int y)
-        {
-            var textSizeF = g.MeasureString(text, Font);
-            var textLocationX = x - textSizeF.Width / 2;
-            var textLocationY = y - textSizeF.Height / 2;
-
-            g.FillRectangle(Brushes.White, textLocationX - 2, textLocationY - 2, textSizeF.Width + 4, textSizeF.Height + 4);
-            g.DrawString(text, Font, new SolidBrush(color), textLocationX, textLocationY);
         }
 
         public void Add(ITreeComponent cmp, Point pos)
@@ -193,13 +110,7 @@ namespace Xania.Calculation.Designer.Controls
             {
                 foreach (var cmp in _treeComponents)
                 {
-                    foreach (var b in cmp.Arguments.ToArray())
-                    {
-                        if (b.Tree == s)
-                        {
-                            cmp.Arguments.Remove(b);
-                        }
-                    }
+                    cmp.UnConnect(s);
                 }
                 _treeComponents.Remove(s);
             }

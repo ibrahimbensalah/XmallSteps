@@ -6,11 +6,10 @@ namespace Xania.Calculation.Designer.Components
 {
     public interface ITreeComponent
     {
-        string InputType { get; }
-
         ComponentLayout Layout { get; }
-        ExpandableDesignerCollection<TreeArgument> Arguments { get; }
         bool Connect(ITreeComponent fromComponent);
+        void Paint(Graphics graphics, Font font, Func<ITreeComponent, bool> isSelected);
+        void UnConnect(ITreeComponent treeComponent);
     }
 
     public class ComponentLayout

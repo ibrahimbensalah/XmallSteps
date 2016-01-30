@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,17 +7,38 @@ namespace Xania.Calculation.Designer.Components
 {
     public class LeafComponent : TreeComponent
     {
+        public LeafComponent()
+        {
+            Type = LeafType.Amount;
+        }
+
+        public IEnumerable<Formula> Formulas { get { return Arguments.OfType<Formula>(); } }
+
         [Category("Functional"), DisplayName(@"Function")]
         public string Fun { get; set; }
 
+        [Category("Functional"), DisplayName(@"Type")]
+        public LeafType Type { get; set; }
+
         public override bool Connect(ITreeComponent fromComponent)
         {
-            if (!(fromComponent is LeafComponent) || Arguments.Any(arg => arg.Tree == fromComponent))
+            if (Arguments.Any(arg => arg.Tree == fromComponent))
                 return false;
 
-            var name = DesignerHelper.GetNewVariableName("arg{0}", Arguments.Select(a => a.Name));
-            Arguments.Add(new TreeArgument { Name = name, Tree = fromComponent });
-            return true;
+            if (fromComponent is LeafComponent)
+            {
+                var name = DesignerHelper.GetNewVariableName("arg{0}", Formulas.Select(a => a.Name));
+                Arguments.Add(new Formula { Name = name, Tree = fromComponent });
+                return true;
+            }
+            else if (fromComponent is RepositoryComponent)
+            {
+                var name = DesignerHelper.GetNewVariableName("arg{0}", Formulas.Select(a => a.Name));
+                Arguments.Add(new Repository { Tree = fromComponent });
+                return true;
+            }
+
+            return false;
         }
 
         public bool IsFunctionCall
@@ -38,32 +59,13 @@ namespace Xania.Calculation.Designer.Components
             if (string.IsNullOrEmpty(Fun))
                 return string.Empty;
 
-            if (IsFunctionCall || IsIdentityCall)
+            if (IsIdentityCall)
+                return Type.ToString();
+
+            if (IsFunctionCall)
                 return Fun;
             return string.Format("input -> {0}", Fun);
         }
-    }
-
-    public abstract class TreeComponent: ITreeComponent
-    {
-        protected TreeComponent()
-        {
-            Layout = new ComponentLayout();
-            Arguments = new ExpandableDesignerCollection<TreeArgument>();
-        }
-
-        [Category("Functional"), DisplayName(@"Input type")]
-        public string InputType { get; set; }
-
-        [Category("Functional")]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public virtual ExpandableDesignerCollection<TreeArgument> Arguments { get; private set; }
-
-        public abstract bool Connect(ITreeComponent fromComponent);
-
-        [Category("Designer")]
-        [TypeConverter(typeof(ComponentConverter))]
-        public ComponentLayout Layout { get; private set; }
     }
 
     public enum LeafType

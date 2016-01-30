@@ -42,16 +42,35 @@ namespace Xania.Calculation.Designer.Tests
                 Name = "getResponse",
                 Arguments =
                 {
-                    new TreeArgument {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
-                    new TreeArgument {Name = "b2", Tree = new LeafComponent {Fun = "score"}},
+                    new Branch {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
+                    new Branch {Name = "b2", Tree = new LeafComponent {Fun = "score"}},
                 }
             };
 
             // act
-            var code = _generator.GenerateCode(node);
+            var code = _generator.GenerateCode(node, null);
 
             // assert
-            code.Should().Be("let getResponse input = Node ([ (\"b1\", Leaf totalAmount) ; (\"b2\", Leaf score) ])");
+            code.Should().Be("Node ([ (\"b1\", Leaf totalAmount) ; (\"b2\", Leaf score) ])");
+        }
+
+        [Test]
+        public void ConcatComponentTest()
+        {
+            var cancat = new ConcatComponent
+            {
+                new NodeComponent
+                {
+                    new Branch {Name = "b1", Tree = new LeafComponent {Fun = "totalAmount"}},
+                },
+                new NodeComponent
+                {
+                    new Branch {Name = "b2", Tree = new LeafComponent {Fun = "totalAmount"}},
+                }
+            };
+            var code = _generator.GenerateCode(cancat, null);
+
+            code.Should().Be("concat [ Node ([ (\"b1\", Leaf totalAmount) ]) ; Node ([ (\"b2\", Leaf totalAmount) ]) ]");
         }
 
         [TestCase(false, "personAge", "(\"b1\", mapTree personAge subtree )")]
@@ -60,10 +79,10 @@ namespace Xania.Calculation.Designer.Tests
         {
             // arrange
             var subTree = new TreeRefComponent { Name = "subtree" };
-            var branch = new TreeArgument {Name = "b1", Many = many, Path = path, Tree = subTree};
+            var branch = new Branch { Name = "b1", Many = many, Path = path, Tree = subTree };
 
             // act
-            var code = _generator.GenerateCode(branch);
+            var code = _generator.GenerateCode(branch, null);
 
             // assert
             code.Should().Be(expected);

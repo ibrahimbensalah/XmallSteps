@@ -32,9 +32,10 @@ namespace Xania.Calculation.Designer
         {
             var generator = new CalculationCodeGenerator();
 
+            const string newLine = "\r\n  ";
             var codeBlocks = designerControl1.Items.OfType<NodeComponent>()
                 .Where(node => !string.IsNullOrEmpty(node.Name))
-                .Select(node => generator.GenerateCode(node));
+                .Select(node => string.Format("let {0} = {1}{2}", node.Name, newLine, generator.GenerateCode(node, newLine)));
 
             var viewer = new FormCodeViewer
             {

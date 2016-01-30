@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Xania.Calculation.Designer.Components;
 
@@ -71,10 +72,13 @@ namespace Xania.Calculation.Designer.Controls
                         _userControl.Add(new LeafComponent { Fun = "input" }, pos);
                         break;
                     case "node":
-                        _userControl.Add(new NodeComponent {  }, pos);
+                        _userControl.Add(new NodeComponent { Name = DesignerHelper.GetNewVariableName("node{0}", _userControl.Nodes.Select(n => n.Name)) }, pos);
                         break;
                     case "connect":
-                        _userControl.Add(new ConnectComponent { }, pos);
+                        _userControl.Add(new ConcatComponent { }, pos);
+                        break;
+                    case "repository":
+                        _userControl.Add(new RepositoryComponent { }, pos);
                         break;
                 }
             }
@@ -90,6 +94,7 @@ namespace Xania.Calculation.Designer.Controls
             }
         }
     }
+
 
     public class DesignerShortcutManager
     {

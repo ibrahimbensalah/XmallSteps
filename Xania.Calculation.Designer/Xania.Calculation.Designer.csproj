@@ -45,8 +45,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\CollectionPropertyDescriptor.cs" />
+    <Compile Include="Components\ConcatComponent.cs" />
+    <Compile Include="Components\DesignerHelper.cs" />
+    <Compile Include="Components\ExpandableDesignerCollection.cs" />
+    <Compile Include="Components\RepositoryComponent.cs" />
     <Compile Include="Components\TreeArgument.cs" />
     <Compile Include="Code\CalculationCodeGenerator.cs" />
+    <Compile Include="Components\TreeComponent.cs" />
+    <Compile Include="Components\TreeRefComponent.cs" />
     <Compile Include="Controls\DesignerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -125,6 +132,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\arrow-pointer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\db_10-128.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
