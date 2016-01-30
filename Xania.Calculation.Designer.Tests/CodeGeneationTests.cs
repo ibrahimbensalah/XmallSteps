@@ -51,7 +51,7 @@ namespace Xania.Calculation.Designer.Tests
             var code = _generator.GenerateCode(node, null);
 
             // assert
-            code.Should().Be("Node ([ (\"b1\", Leaf totalAmount) ; (\"b2\", Leaf score) ])");
+            code.Should().Be("Node [ (\"b1\", Leaf totalAmount) ; (\"b2\", Leaf score) ]");
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace Xania.Calculation.Designer.Tests
             };
             var code = _generator.GenerateCode(cancat, null);
 
-            code.Should().Be("concat [ Node ([ (\"b1\", Leaf totalAmount) ]) ; Node ([ (\"b2\", Leaf totalAmount) ]) ]");
+            code.Should().Be("concat [ Node [ (\"b1\", Leaf totalAmount) ] ; Node [ (\"b2\", Leaf totalAmount) ] ]");
         }
 
         [TestCase(false, "personAge", "(\"b1\", mapTree personAge subtree )")]

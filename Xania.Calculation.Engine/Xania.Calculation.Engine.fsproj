@@ -42,10 +42,10 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library1.fs" />
+    <Compile Include="Calc.fs" />
     <None Include="Script.fsx" />
     <None Include="result.json" />
-    <None Include="Engine.fsx" />
+    <None Include="Test.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

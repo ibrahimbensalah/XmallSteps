@@ -30,6 +30,10 @@ namespace Xania.Calculation.Designer.Code
 
         public string GenerateCode(ConcatComponent node, string newLine)
         {
+            if (newLine == null)
+                return "concat [ " + string.Join(" ; ",
+                    node.Select(n => GenerateCode(n, null))) + " ]";
+
             return "concat [ " + newLine + string.Join(" ; ",
                 node.Select(n => GenerateCode(n, newLine + "  "))) + " ]";
         }

@@ -56,7 +56,7 @@ namespace Xania.Calculation.Designer.Controls
                 var fromComponent = _designerControl.FindComponents(dragBranch.FromLocation).FirstOrDefault();
                 var endComponent = _designerControl.FindComponents(endLocation).FirstOrDefault();
 
-                if (fromComponent != null && fromComponent != endComponent)
+                if (endComponent != null && fromComponent != null && fromComponent != endComponent)
                 {
                     endComponent.Connect(fromComponent);
                     _designerControl.Invalidate();
