@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Xania.Calculation.Designer.Components;
@@ -58,28 +60,46 @@ namespace Xania.Calculation.Designer.Controls
         {
             if (e.Data.GetDataPresent(typeof(DragItem)))
                 e.Effect = DragDropEffects.Copy;
+            else if (e.Data.GetDataPresent(DataFormats.FileDrop)) 
+                e.Effect = DragDropEffects.Copy;
         }
 
         private void DesignerControl_DragDrop(object sender, DragEventArgs e)
         {
+            var pos = _userControl.PointToClient(new Point(e.X, e.Y));
+
             var dragItem = e.Data.GetData(typeof(DragItem)) as DragItem;
             if (dragItem != null)
             {
-                var pos = _userControl.PointToClient(new Point(e.X, e.Y));
                 switch (dragItem.Type.ToLower())
                 {
                     case "leaf":
-                        _userControl.Add(new LeafComponent { Fun = "input" }, pos);
+                        _userControl.Add(new LeafComponent {Fun = "input"}, pos);
                         break;
                     case "node":
-                        _userControl.Add(new NodeComponent { Name = DesignerHelper.GetNewVariableName("node{0}", _userControl.Nodes.Select(n => n.Name)) }, pos);
+                        _userControl.Add(
+                            new NodeComponent
+                            {
+                                Name =
+                                    DesignerHelper.GetNewVariableName("node{0}", _userControl.Nodes.Select(n => n.Name))
+                            }, pos);
                         break;
                     case "connect":
-                        _userControl.Add(new ConcatComponent { }, pos);
+                        _userControl.Add(new ConcatComponent {}, pos);
                         break;
                     case "repository":
-                        _userControl.Add(new RepositoryComponent { }, pos);
+                        // _userControl.Add(new CsvRepositoryComponent {}, pos);
                         break;
+                }
+            }
+            else
+            {
+                string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                if (files == null) return;
+
+                foreach (var fi in files.Select(file => new FileInfo(file)))
+                {
+                    _userControl.Add(new CsvRepositoryComponent(fi), pos);
                 }
             }
         }

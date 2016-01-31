@@ -32,8 +32,6 @@ namespace Xania.Calculation.Designer.Components
         {
         }
 
-        public string Query { get; set; }
-
         [TypeConverter(typeof (DictionaryTypeConverter))]
         public IDictionary<string, string> Where
         {
@@ -41,7 +39,7 @@ namespace Xania.Calculation.Designer.Components
             {
                 if (_where == null)
                 {
-                    var component = Tree as RepositoryComponent;
+                    var component = Tree as CsvRepositoryComponent;
                     if (component != null)
                     {
                         _where = new Dictionary<string, string>();
@@ -52,6 +50,11 @@ namespace Xania.Calculation.Designer.Components
                 }
                 return _where;
             }
+        }
+
+        public override string ToString()
+        {
+            return Tree.ToString();
         }
     }
 

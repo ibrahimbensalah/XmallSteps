@@ -31,7 +31,7 @@ namespace Xania.Calculation.Designer.Components
                 Arguments.Add(new Formula { Name = name, Tree = fromComponent });
                 return true;
             }
-            else if (fromComponent is RepositoryComponent)
+            else if (fromComponent is CsvRepositoryComponent)
             {
                 var name = DesignerHelper.GetNewVariableName("arg{0}", Formulas.Select(a => a.Name));
                 Arguments.Add(new Repository { Tree = fromComponent });

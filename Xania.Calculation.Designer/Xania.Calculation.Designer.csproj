@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.13.5.0\lib\net40-client\CsvHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,7 +53,7 @@
     <Compile Include="Components\ConcatComponent.cs" />
     <Compile Include="Components\DesignerHelper.cs" />
     <Compile Include="Components\ExpandableDesignerCollection.cs" />
-    <Compile Include="Components\RepositoryComponent.cs" />
+    <Compile Include="Components\CsvRepositoryComponent.cs" />
     <Compile Include="Components\TreeArgument.cs" />
     <Compile Include="Code\CalculationCodeGenerator.cs" />
     <Compile Include="Components\TreeComponent.cs" />
@@ -117,6 +121,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

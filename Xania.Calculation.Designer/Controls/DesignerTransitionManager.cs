@@ -59,9 +59,9 @@ namespace Xania.Calculation.Designer.Controls
                 if (endComponent != null && fromComponent != null && fromComponent != endComponent)
                 {
                     endComponent.Connect(fromComponent);
-                    _designerControl.Invalidate();
                 }
             }
+            _designerControl.Invalidate();
         }
 
         private void _designerControl_DragEnter(object sender, DragEventArgs e)
