@@ -2,7 +2,8 @@
 // for more guidance on F# programming.
 
 #load "Calc.fs"
-open Xania.Calculation.Engine.Calc
+open Xania.Calculation.Engine
+open Tree
 
 // let add x y  = x + y
 let add4 y = 4 + y
@@ -44,7 +45,7 @@ let mainTree =
     Node [
         ("simple", simpleNode) 
         ("blue", blueTree) 
-        ("brown list", Person.personGrades >> List.map (applyTree brownTree) >> Array |> Leaf )
+        ("brown list", Person.personGrades >> List.map (apply brownTree) >> Array |> Leaf )
     ]
 
 let ibrahim = { FirstName = "ibrahim" ; Age = 35 ; Grades = [9 ; 8 ; 10] }
@@ -53,15 +54,19 @@ let xania = { Name = "Xania" ; Employees = [ ibrahim ; ibrahim ] }
 // let branchMany l f input = List.map (fun i -> f (input, i) ) (l input) |> Array
 
 let reportEmployee (parent, input) = 
-    "Employee " + input.FirstName + " works at " + parent.Name
+    "Employee " + input.FirstName + " works at " + parent.Name |> Text
 
 let orgTree = 
     Node [ 
         ("Name", Organisation.name >> Text |> Leaf )
         branch "Name2" id (Organisation.name >> Text)
-        ("Employees", (bindInputs Organisation.employees) >> bindResults (reportEmployee >> Text) |> Leaf )
-        branchMany "Employees2" (bindInputs Organisation.employees) (reportEmployee >> Text)
+        ("Employees", (bindInputs Organisation.employees) >> bindResults reportEmployee |> Leaf )
+        branchMany "Employees2" (bindInputs Organisation.employees) reportEmployee
         ("Employee3", Organisation.employees >> bindTrees blueTree |> Leaf )
     ]
 
 printfn "%s" (treeToJson mainTree ibrahim)
+
+let f ((a, b), c) = b, (c, a)
+
+(f ((1, 2), 3)).ToString() |> printfn "%s"  

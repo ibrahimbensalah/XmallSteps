@@ -1,6 +1,6 @@
 ﻿namespace Xania.Calculation.Engine
 
-module Calc =
+module Tree =
 
     type Result =
         | Amount of decimal
@@ -18,20 +18,18 @@ module Calc =
     let mapTuple f (s, t) = (s, f t)
 
     let rec mapTree (f:'a -> 'b) tree = 
-        let mapTuples = List.map << mapTuple << mapTree
+        let mapTuples = mapTree >> mapTuple >> List.map
         match tree with
         | Const c -> Const c
         | Leaf a -> Leaf (f >> a)
         | Node tuples -> Node ( mapTuples f tuples )
 
-    let rec applyTree tree x =
-        let applySubTree tree = applyTree tree x
+    let rec apply tree x =
+        let applySub tree = apply tree x
         match tree with
         | Const c -> c
         | Leaf f -> f x
-        | Node tuples -> 
-            let bindTuple = mapTuple applySubTree
-            tuples |> List.map bindTuple |> Complex
+        | Node tuples -> List.map (mapTuple applySub) tuples |> Complex
 
     let rec resultToJson result =
         let tupleToJson (n, v) = "\"" + n + "\" : " + (resultToJson v) + ""
@@ -43,18 +41,7 @@ module Calc =
             | Array arr -> "[ " + (String.concat ", " (List.map resultToJson arr)) + " ]"
             | Complex tuples -> "{ " + (String.concat ", " (List.map tupleToJson tuples)) + " }"
 
-    let complexToJson l = l |> Complex |> resultToJson
-
-    let rec treeToJson tree input =
-        let subTreeToJson subtree = treeToJson subtree input
-        // let leafToJson value = "\"" + (value.ToString()) + "\""
-        // let eval = Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.EvaluateQuotation
-        match tree with
-        | Const c -> c.ToString()
-        | Leaf f -> f input |> resultToJson
-        | Node branches -> 
-            let branchToResult (n, st) = (n, applyTree st input) // "\"" + n + "\" : " + (subTreeToJson st)
-            List.map branchToResult branches |> complexToJson
+    let treeToJson tree input = apply tree input |> resultToJson
 
     //// helpers
     let toText x = x.ToString() |> Text
@@ -66,5 +53,5 @@ module Calc =
     let branch name path f = (name , path >> f |> Leaf )
 
     let bindResults f = List.map f >> Array
-    let bindTrees f = bindResults (applyTree f)
+    let bindTrees f = bindResults (apply f)
 
