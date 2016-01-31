@@ -30,5 +30,10 @@ namespace Xania.Calculation.Designer.Components
         public void UnConnect(ITreeComponent treeComponent)
         {
         }
+
+        public string[] Fields
+        {
+            get { return new string[] {"Field1", "Field2", "Field3"}; }
+        }
     }
 }
