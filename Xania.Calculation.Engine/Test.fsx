@@ -74,3 +74,8 @@ let f ((a, b), c) = b, (c, a)
 
 //open System
 // open Microsoft.FSharp.Compiler.SourceCodeServices
+//
+//    [<Test>]
+//    let sometest () =
+//        let result = parseExpression "x + 1"
+//        Assert.AreEqual (1, 1)
