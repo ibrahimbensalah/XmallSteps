@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Xania.Calculation.Designer.Code;
 using Xania.Calculation.Designer.Components;
@@ -8,8 +9,11 @@ namespace Xania.Calculation.Designer
 {
     public partial class FormCalculationEngine : Form
     {
-        public FormCalculationEngine()
+        private readonly ICalculationEngine _engine;
+
+        public FormCalculationEngine(ICalculationEngine engine)
         {
+            _engine = engine;
             InitializeComponent();
         }
 
@@ -45,5 +49,35 @@ namespace Xania.Calculation.Designer
             viewer.Show(this);
 
         }
+
+        private void executeToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var writer = new StringWriter();
+
+                foreach (var item in designerControl1.Items)
+                {
+                    var json = _engine.Run(item);
+                    writer.WriteLine(json);
+                }
+
+                var viewer = new FormCodeViewer
+                {
+                    Code = writer.ToString()
+                };
+
+                viewer.Show(this);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message, @"engine error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    public interface ICalculationEngine
+    {
+        string Run(ITreeComponent item);
     }
 }

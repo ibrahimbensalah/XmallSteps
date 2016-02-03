@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>639a7405-b1f8-4108-9a34-342d397791ef</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Xania.Calculation.Engine</RootNamespace>
     <AssemblyName>Xania.Calculation.Engine</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -39,13 +39,22 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calc.fs" />
     <None Include="Script.fsx" />
     <None Include="result.json" />
     <None Include="Test.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xania.Calculation.Designer\Xania.Calculation.Designer.csproj">
+      <Name>Xania.Calculation.Designer</Name>
+      <Project>{e82ae7c0-18c6-41e0-986d-3397c53337b9}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

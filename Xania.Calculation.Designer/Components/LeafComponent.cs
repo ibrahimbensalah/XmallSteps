@@ -71,6 +71,7 @@ namespace Xania.Calculation.Designer.Components
     public enum LeafType
     {
         Amount,
-        Number
+        Number,
+        Text
     }
 }
