@@ -1,6 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.net. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 
+// #r @"bin\Debug\Xania.Calculation.Designer.exe"
 #load "Calc.fs"
 open Xania.Calculation.Engine
 open Tree
@@ -70,3 +71,6 @@ printfn "%s" (treeToJson mainTree ibrahim)
 let f ((a, b), c) = b, (c, a)
 
 (f ((1, 2), 3)).ToString() |> printfn "%s"  
+
+//open System
+// open Microsoft.FSharp.Compiler.SourceCodeServices

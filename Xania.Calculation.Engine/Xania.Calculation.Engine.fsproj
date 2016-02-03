@@ -48,6 +48,7 @@
     <None Include="Script.fsx" />
     <None Include="result.json" />
     <None Include="Test.fsx" />
+    <None Include="Parser.fsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xania.Calculation.Designer\Xania.Calculation.Designer.csproj">
